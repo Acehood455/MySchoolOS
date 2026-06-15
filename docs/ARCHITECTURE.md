@@ -17,7 +17,7 @@ Define the architectural direction, system boundaries, and decision principles s
 - Update only when architecture decisions are formally reviewed.
 - Preserve backward compatibility unless a breaking change is explicitly approved.
 - Record unresolved areas as `[TBD]` with decision owners.
-- Any exception to the documented direction must be logged in the architecture decision record.
+- Any exception to the documented direction must be logged in `ADRS.md`.
 - AI tools must treat this document as the architecture authority, not a suggestion.
 
 ## Architecture Principles
@@ -117,7 +117,7 @@ Define the architectural direction, system boundaries, and decision principles s
 ## Architecture Drift Prevention
 - New modules require a boundary review.
 - Major changes require update of `MODULE_CATALOG.md`, `MULTI_TENANCY.md`, and `SECURITY_REQUIREMENTS.md`.
-- Architecture decisions should be captured with rationale and alternatives considered.
+- Architecture decisions should be captured in `ADRS.md` with rationale and alternatives considered.
 
 ## Open Decisions
 - Primary architecture style: `[TBD]`
