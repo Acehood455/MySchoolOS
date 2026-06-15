@@ -32,13 +32,14 @@ Provide the product and delivery sequence for the platform while preventing feat
 
 ### Later
 - Focus: `[TBD]`
-- Goal: Add advanced platform capabilities only after core adoption and reliability targets are met.
+- Goal: Add advanced platform capabilities such as gamification, educational games, live classes, AI insights, and mobile applications only after core adoption and reliability targets are met.
 
 ## Release Themes
 - Foundation trust: authentication, tenancy, auditability, and support readiness.
-- Core school operations: the minimum workflows required for pilot success.
+- Core school operations: administration, academics, attendance, results, communication, finance, and learning workflows required for pilot success.
 - Operational scale: reporting, administration, and stability improvements.
 - Expansion discipline: only add adjacent features when core usage is healthy.
+- Future experience layers: gamification, educational games, live classes, AI insights, and mobile applications.
 
 ## Examples
 - Good roadmap item: "Pilot-ready tenant onboarding with verified isolation and audit trail."
@@ -106,3 +107,4 @@ Provide the product and delivery sequence for the platform while preventing feat
 - MVP release target date: `[TBD]`
 - Pilot tenant count: `[TBD]`
 - Expansion themes: `[TBD]`
+- White-label rollout timing: `[TBD]`

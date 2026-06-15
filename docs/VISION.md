@@ -1,7 +1,7 @@
 # Vision
 
 ## Purpose
-Define the long-term product direction for the multi-tenant School ERP + LMS SaaS platform and keep AI agents aligned on what the platform is meant to become.
+Define the long-term product direction for `School OS`, the multi-tenant cloud operating system for primary and secondary schools, and keep AI agents aligned on what the platform is meant to become.
 
 ## Scope
 - Covers the product mission, intended users, and strategic differentiators.
@@ -22,13 +22,14 @@ Define the long-term product direction for the multi-tenant School ERP + LMS Saa
 - When another document conflicts with this one, the conflict must be resolved explicitly rather than silently ignored.
 
 ## Vision Statement
-Build a secure, tenant-isolated, cloud-first platform that helps schools run academic, administrative, and learner engagement workflows in one place.
+Build a secure, tenant-isolated, cloud-based operating system that helps primary and secondary schools run administration, academics, attendance, results, communication, finance, learning, and analytics in one place.
 
 ## Strategic Outcomes
 - Reduce administrative friction for school staff.
 - Improve learner and parent engagement through a unified digital experience.
 - Give school operators reliable operational visibility across academics, finance, attendance, communication, and LMS activity.
 - Support growth from a single school to a portfolio of schools without replatforming.
+- Support white-label deployment patterns without compromising isolation or maintainability.
 
 ## Product Narrative
 The platform should feel like a dependable operating system for schools rather than a loose collection of disconnected features.
@@ -46,11 +47,14 @@ The platform should feel like a dependable operating system for schools rather t
 - Parents and guardians
 - Finance and operations staff
 - Platform administrators
+- School owners and operators
 
 ## Product Principles
 - Tenant isolation is a product promise, not just an engineering concern.
 - Security defaults must be safe for school data.
 - The platform must scale operationally across many schools without custom code per tenant.
+- The platform must support feature flags to control rollout, experimentation, and tenant-safe delivery.
+- The platform must support white-label experiences within approved branding boundaries.
 - Core workflows should be simple enough for busy school staff to adopt quickly.
 - Every new capability must justify its complexity with measurable user value.
 - The product should optimize for trust, clarity, and operational durability.
@@ -67,12 +71,13 @@ The platform should feel like a dependable operating system for schools rather t
 - Introducing features that cannot be secured, audited, or isolated cleanly.
 - Becoming a generic low-code platform for unrelated industries.
 - Prioritizing novelty over school operational usefulness.
+- Shipping feature complexity before the platform can support it safely.
 
 ## Success Definition
 The product is successful when schools can adopt the platform as their primary operating system for academic and learner workflows, while the SaaS operator can support many tenants with predictable reliability, security, and maintainability.
 
 ## Decision Record
-- Decision: The product is positioned as a multi-tenant School ERP + LMS SaaS, not a single-school bespoke system.
+- Decision: The product is positioned as `School OS`, a multi-tenant cloud operating system for primary and secondary schools, not a single-school bespoke system.
 - Status: Approved
 - Reason: The SaaS model requires explicit tenant boundaries and repeatable operations.
 - Alternatives considered: Single-tenant deployments, custom-fork deployments, and broad horizontal SaaS positioning.
@@ -100,3 +105,4 @@ The product is successful when schools can adopt the platform as their primary o
 - Initial school segment: `[TBD]`
 - Monetization model: `[TBD]`
 - Deployment model: `[TBD]`
+- White-label strategy: `[TBD]`

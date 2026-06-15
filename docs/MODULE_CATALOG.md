@@ -55,7 +55,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 - Decision record: Tenant lifecycle ownership stays explicit and documented.
 
 ### Academic Operations
-- Purpose: School operational workflows such as classes, terms, attendance, and related academic administration.
+- Purpose: School operational workflows such as classes, terms, attendance, timetable, and related academic administration.
 - Owner: Product domain lead
 - Status: `[TBD]`
 - Tenant sensitivity: High
@@ -82,7 +82,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 - Decision record: Communication remains tenant-scoped unless a documented exception exists.
 
 ### Reporting and Analytics
-- Purpose: Operational reporting, summaries, and dashboards.
+- Purpose: Operational reporting, summaries, dashboards, and decision support analytics.
 - Owner: Platform analytics lead
 - Status: `[TBD]`
 - Tenant sensitivity: High
@@ -100,7 +100,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 - Decision record: Notification channels must be approved before use.
 
 ### Administration
-- Purpose: Platform administration, support tools, and operational controls.
+- Purpose: Platform administration, support tools, feature flag controls, and operational controls.
 - Owner: Platform operations
 - Status: `[TBD]`
 - Tenant sensitivity: High
@@ -116,6 +116,46 @@ Maintain a shared inventory of platform modules so contributors can understand o
 - Dependencies: Identity and Access, all actioning modules
 - Notes: Mandatory for sensitive workflows.
 - Decision record: Audit coverage is a baseline requirement for sensitive operations.
+
+### Finance
+- Purpose: Billing-related school finance workflows, receivables, and financial reporting within tenant boundaries.
+- Owner: Finance domain lead
+- Status: `[TBD]`
+- Tenant sensitivity: High
+- Dependencies: Identity and Access, Tenant Management, Audit and Compliance
+- Notes: Requires stronger controls than general admin data.
+
+### Results
+- Purpose: Learner results capture, grading, publishing, and report visibility controls.
+- Owner: Academic domain lead
+- Status: `[TBD]`
+- Tenant sensitivity: High
+- Dependencies: Identity and Access, Academic Operations, Audit and Compliance
+- Notes: Publication rules must be explicit.
+
+### Parent Portal
+- Purpose: Parent and guardian access to approved school information and learner-related views.
+- Owner: Product domain lead
+- Status: `[TBD]`
+- Tenant sensitivity: High
+- Dependencies: Identity and Access, Academic Operations, Communication
+- Notes: Parent access must be narrowly scoped.
+
+### Feature Flags
+- Purpose: Controlled rollout, experimentation, and tenant-safe release management.
+- Owner: Platform
+- Status: `[TBD]`
+- Tenant sensitivity: High
+- Dependencies: Identity and Access, Administration
+- Notes: Feature flags must not override security or tenancy rules.
+
+### White-Label Presentation
+- Purpose: Approved branding, theme, and tenant presentation controls.
+- Owner: Platform / Product
+- Status: `[TBD]`
+- Tenant sensitivity: Medium
+- Dependencies: Tenant Management, Administration
+- Notes: Must not become a custom code path per tenant.
 
 ## Examples
 - Good module: "Tenant Management" because it has a clearly bounded responsibility.
@@ -150,3 +190,5 @@ Maintain a shared inventory of platform modules so contributors can understand o
 - Final module boundaries: `[TBD]`
 - Shared services vs domain-specific services: `[TBD]`
 - Deprecation policy for overlapping capabilities: `[TBD]`
+- Whether feature flags are a dedicated module or platform service: `[TBD]`
+- White-label ownership split: `[TBD]`

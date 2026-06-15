@@ -24,12 +24,13 @@ Define how multiple AI agents must operate in this repository so they remain con
 2. Do not generate database schema unless explicitly requested in a separate approved task.
 3. Do not invent product requirements, architecture decisions, or security exceptions.
 4. Do not assume a single-tenant model.
-5. Do not weaken security or isolation to simplify implementation.
-6. Do not add unapproved features during documentation, planning, or review tasks.
-7. Do not overwrite user changes unless explicitly instructed.
-8. Do not create hidden dependencies between documents without updating the source references.
-9. Do not rewrite a document in a way that erases unresolved decisions.
-10. Do not answer with code when the request is for documentation governance.
+5. Do not assume white-label support means shared administrative control.
+6. Do not weaken security or isolation to simplify implementation.
+7. Do not add unapproved features during documentation, planning, or review tasks.
+8. Do not overwrite user changes unless explicitly instructed.
+9. Do not create hidden dependencies between documents without updating the source references.
+10. Do not rewrite a document in a way that erases unresolved decisions.
+11. Do not answer with code when the request is for documentation governance.
 
 ## Examples
 - Good agent behavior: identify a tenancy conflict and stop to clarify rather than guessing.
@@ -93,6 +94,7 @@ Define how multiple AI agents must operate in this repository so they remain con
 - Any request that introduces a new major module
 - Any request that conflicts with documented ownership
 - Any request to provide implementation details when documentation-only work is requested
+- Any request to use feature flags as a substitute for permissions
 
 ## Open Decisions
 - Agent review workflow: `[TBD]`

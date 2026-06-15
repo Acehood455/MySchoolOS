@@ -25,6 +25,7 @@ Define the engineering standards that future code must follow so the platform re
 - Prefer clear, readable, maintainable code over clever code.
 - Keep functions, modules, and components focused on a single responsibility.
 - Avoid duplication when a shared abstraction would be clearer.
+- Prefer modular boundaries that align with product capabilities.
 
 ### Naming
 - Use descriptive names that reflect domain intent.
@@ -44,6 +45,7 @@ Define the engineering standards that future code must follow so the platform re
 - Treat security checks as mandatory, not optional.
 - Never trust client input.
 - Never log secrets or tenant-sensitive data unnecessarily.
+- Treat feature flags as control-plane decisions, not security shortcuts.
 
 ### Testing
 - High-risk code paths require strong test coverage.
@@ -88,6 +90,7 @@ Define the engineering standards that future code must follow so the platform re
 - Formatting tools: `[TBD]`
 - Linting rules: `[TBD]`
 - Testing stack: `[TBD]`
+- White-label theming constraints: `[TBD]`
 
 ## Open Decisions
 - Final framework conventions: `[TBD]`

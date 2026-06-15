@@ -65,6 +65,15 @@ Define the security baseline for the platform so all contributors build and revi
 - The team must have a documented process for security incidents.
 - Tenant leakage must be handled as a critical incident.
 
+### Feature Flags
+- Feature flags must be securely scoped and auditable.
+- A disabled feature must remain inaccessible to unauthorized users.
+- Flags must never be used to bypass security review or release gates.
+
+### White-Label Support
+- White-label settings must not expose hidden administrative power.
+- Branding or theme controls must not bypass authorization or tenant isolation.
+
 ## Decision Record
 - Decision: Security is a release gate, not a post-launch enhancement.
 - Status: Approved

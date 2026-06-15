@@ -1,7 +1,7 @@
 # Architecture
 
 ## Purpose
-Define the architectural direction, system boundaries, and decision principles so all contributors avoid drift and keep the platform secure, scalable, and maintainable.
+Define the architectural direction, system boundaries, and decision principles so all contributors avoid drift and keep the platform secure, scalable, modular, and maintainable.
 
 ## Scope
 - Covers the high-level system design and architectural decision rules.
@@ -22,11 +22,16 @@ Define the architectural direction, system boundaries, and decision principles s
 
 ## Architecture Principles
 - Strong tenant isolation first.
+- Security first.
+- Documentation first.
 - Clear module boundaries over shared accidental coupling.
+- Modular architecture over monolithic convenience.
 - Security by default and least privilege everywhere.
 - Operational simplicity over premature optimization.
 - Observability built in, not added later.
 - Keep the platform extensible without allowing arbitrary tenant-specific forks.
+- Feature flags are mandatory for controlled rollout of eligible capabilities.
+- White-label support is allowed only within documented branding boundaries.
 
 ## Architecture Objectives
 - Make tenant isolation obvious and enforceable.
@@ -78,6 +83,8 @@ Define the architectural direction, system boundaries, and decision principles s
 - Caching strategy: `[TBD]`
 - Search strategy: `[TBD]`
 - File storage strategy: `[TBD]`
+- Feature flag platform choice: `[TBD]`
+- White-label presentation strategy: `[TBD]`
 
 ## Decision Record
 - Decision: The architecture is boundary-driven and tenant-first.
@@ -116,3 +123,4 @@ Define the architectural direction, system boundaries, and decision principles s
 - Primary architecture style: `[TBD]`
 - Service ownership model: `[TBD]`
 - Cross-cutting platform stack: `[TBD]`
+- Whether AI insights are a first-party service or integrated capability: `[TBD]`

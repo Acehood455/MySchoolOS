@@ -33,6 +33,8 @@ Record the hard constraints that must never be violated. This document exists to
 8. No direct production changes may bypass review, traceability, and rollback planning.
 9. No feature should create hidden coupling between tenants.
 10. No shortcut may compromise auditability of user, administrative, or system actions.
+11. No feature flag may bypass security, tenancy, or audit controls.
+12. No white-label customization may weaken tenant identity or operator accountability.
 
 ## Examples
 - Allowed: a role may access only the tenant data explicitly associated with the active request context.
@@ -68,6 +70,8 @@ Record the hard constraints that must never be violated. This document exists to
 - Avoid cross-module assumptions that make future isolation or scaling harder.
 - Keep external integrations behind stable interfaces and documented policies.
 - Avoid shared helper layers that hide tenant-sensitive behavior.
+- Treat feature flags as controlled release mechanisms, not permission substitutes.
+- Treat white-label support as a presentation concern, not a tenancy boundary override.
 
 ## AI Contribution Rules
 - AI tools must not soften, reinterpret, or “optimize away” any non-negotiable.

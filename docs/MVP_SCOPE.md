@@ -22,7 +22,7 @@ Define the minimum product boundary for the first shippable release so the team 
 - AI tools must treat MVP scope as a hard boundary, not an optimization target.
 
 ## MVP Definition
-The MVP is the smallest end-to-end product that allows a real school tenant to operate a core academic workflow safely, with tenant isolation, auditability, and basic administration in place.
+The MVP is the smallest end-to-end product that allows a real school tenant to operate core school workflows safely, with tenant isolation, auditability, and basic administration in place.
 
 ## Scope Philosophy
 - Ship the minimum safe path to real use.
@@ -34,10 +34,13 @@ The MVP is the smallest end-to-end product that allows a real school tenant to o
 - Role-based access for core user types
 - Core school administration workflows: `[TBD]`
 - Core learning workflows: `[TBD]`
+- Core attendance workflows: `[TBD]`
+- Core results workflows: `[TBD]`
 - Basic communication workflows: `[TBD]`
 - Operational dashboards or summaries: `[TBD]`
 - Security and audit foundations
 - Support tooling required to operate pilot tenants
+- Minimal white-label branding controls: `[TBD]`
 
 ## Examples
 - In scope example: role-based onboarding for a pilot school.
@@ -52,6 +55,10 @@ The MVP is the smallest end-to-end product that allows a real school tenant to o
 - Multi-brand white-label complexity beyond approved needs
 - Non-essential integrations
 - Nice-to-have workflows that do not unblock pilot usage
+- Gamification
+- Educational games
+- Live classes
+- Mobile applications
 
 ## Decision Record
 - Decision: The MVP is intentionally narrow and pilot-driven.
@@ -92,3 +99,4 @@ The MVP is the smallest end-to-end product that allows a real school tenant to o
 - Exact core workflow list: `[TBD]`
 - Pilot success threshold: `[TBD]`
 - MVP launch tenant count: `[TBD]`
+- White-label minimum set: `[TBD]`

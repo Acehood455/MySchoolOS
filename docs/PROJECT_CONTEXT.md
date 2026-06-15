@@ -21,10 +21,11 @@ Capture the current business, product, and technical context so future contribut
 - Treat this as the orientation page for new humans and AI tools.
 
 ## Current Context
-- Product: Multi-tenant School ERP + LMS SaaS platform
+- Product: School OS, a multi-tenant cloud-based operating system for primary and secondary schools
 - Repository state: Documentation foundation in progress
 - Primary design concern: Prevent tenant isolation failures
 - Primary delivery concern: Keep scope small enough to ship safely
+- Primary platform principles: multi-tenant first, security first, documentation first, modular architecture, feature flags, and white-label support
 
 ## Examples
 - Good context note: "We are still deciding the initial school segment."

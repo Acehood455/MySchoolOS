@@ -1,7 +1,7 @@
 # Product Requirements
 
 ## Purpose
-Define the product-level requirements for the School ERP + LMS SaaS platform so that all contributors build toward the same user outcomes.
+Define the product-level requirements for `School OS` so that all contributors build toward the same user outcomes.
 
 ## Scope
 - Covers business objectives, user needs, functional expectations, and non-functional expectations.
@@ -21,7 +21,7 @@ Define the product-level requirements for the School ERP + LMS SaaS platform so 
 - Requirements should be testable and reviewable by both humans and AI tools.
 
 ## Product Goals
-- Provide a unified platform for school operations and learning delivery.
+- Provide a unified cloud operating system for primary and secondary schools.
 - Reduce manual work for school administrators and teachers.
 - Improve learner and parent engagement.
 - Give the SaaS operator confidence in tenant isolation, security, and operational control.
@@ -48,8 +48,16 @@ Define the product-level requirements for the School ERP + LMS SaaS platform so 
 - Administrative actions must be traceable.
 
 ### Academic Operations
-- Schools must be able to manage academic workflows relevant to their grade structure and calendar.
+- Schools must be able to manage academic workflows relevant to their grade structure, timetable, and calendar.
 - Staff must be able to monitor learner progress and instructional activity.
+
+### Attendance
+- Staff must be able to record, review, and report attendance with tenant-safe controls.
+- Attendance workflows must support operational follow-up and parent visibility where approved.
+
+### Results
+- Schools must be able to capture, manage, and publish learner results according to approved academic policy.
+- Result access must respect role boundaries and publication rules.
 
 ### Communication
 - The platform must support clear communication between staff, learners, and parents.
@@ -65,6 +73,18 @@ Define the product-level requirements for the School ERP + LMS SaaS platform so 
 - Tenant admins must be able to configure their school within approved platform boundaries.
 - The platform operator must be able to manage tenants centrally without custom code per tenant.
 
+### Parent Portal
+- Parents and guardians must be able to view approved school information relevant to their child or linked learners.
+- Parent-facing access must be limited to explicit permissions and tenant context.
+
+### Finance
+- Schools must be able to manage approved finance workflows relevant to operations and reporting.
+- Financial data must be protected with stronger access controls and auditability.
+
+### Analytics
+- The platform must provide analytics that help school leaders make operational decisions.
+- Analytics must avoid cross-tenant leakage and must distinguish aggregate reporting from tenant-specific data.
+
 ## Examples
 - Good requirement: "Admins can invite staff and assign roles within their tenant."
 - Bad requirement: "Admins can do anything if they are trusted."
@@ -78,6 +98,7 @@ Define the product-level requirements for the School ERP + LMS SaaS platform so 
 - Accessibility: usable by diverse school communities.
 - Maintainability: modular design and clear ownership.
 - Observability: logs, metrics, and traces sufficient for support and incident response.
+- Flexibility: feature flags and white-label support must not compromise the core control model.
 
 ## Acceptance Criteria Pattern
 - Each user-facing requirement should have a clear success condition.
@@ -118,6 +139,7 @@ Define the product-level requirements for the School ERP + LMS SaaS platform so 
 - Custom tenant forks.
 - Unapproved third-party integrations.
 - Features that cannot be audited or isolated properly.
+- Unlimited white-label customization outside approved brand controls.
 
 ## Open Decisions
 - Initial user journey priorities: `[TBD]`

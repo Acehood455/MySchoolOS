@@ -26,6 +26,7 @@ Define how tenant isolation, tenant context, and shared platform operations must
 - Shared services must not weaken tenant boundaries.
 - Tenant context must not be inferred ambiguously.
 - Cross-tenant reporting or administration requires explicit approval and safe aggregation rules.
+- White-label presentation must not alter tenant identity, tenant boundaries, or administrative accountability.
 
 ## Examples
 - Good: a school admin sees only records for their tenant.
@@ -38,6 +39,7 @@ Define how tenant isolation, tenant context, and shared platform operations must
 - Tenant identification source of truth: `[TBD]`
 - Tenant provisioning flow: `[TBD]`
 - Tenant lifecycle states: `[TBD]`
+- White-label policy linkage: `[TBD]`
 
 ## Decision Record
 - Decision: Tenant context must be explicit and verified wherever tenant-scoped data is used.
