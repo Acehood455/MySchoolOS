@@ -18,12 +18,14 @@ Define the product-level requirements for the School ERP + LMS SaaS platform so 
 - Every requirement must be traceable to a user need, compliance need, or business goal.
 - Unapproved ideas must remain in an explicitly labeled future section or `[TBD]`.
 - Requirements that conflict with non-negotiables must be rejected, not weakened.
+- Requirements should be testable and reviewable by both humans and AI tools.
 
 ## Product Goals
 - Provide a unified platform for school operations and learning delivery.
 - Reduce manual work for school administrators and teachers.
 - Improve learner and parent engagement.
 - Give the SaaS operator confidence in tenant isolation, security, and operational control.
+- Keep the product understandable enough that a new AI contributor can infer the intended behavior from the docs alone.
 
 ## Personas
 - School Administrator
@@ -32,6 +34,12 @@ Define the product-level requirements for the School ERP + LMS SaaS platform so 
 - Parent or Guardian
 - Finance Officer
 - Platform Operator
+
+## Use Cases
+- An administrator configures a new tenant and assigns staff roles safely.
+- A teacher records attendance and communicates with learners or parents within role boundaries.
+- A learner accesses assigned learning activities without seeing other tenants.
+- A platform operator reviews operational health without exposing tenant-sensitive data.
 
 ## Core Requirement Areas
 ### Identity and Access
@@ -57,6 +65,12 @@ Define the product-level requirements for the School ERP + LMS SaaS platform so 
 - Tenant admins must be able to configure their school within approved platform boundaries.
 - The platform operator must be able to manage tenants centrally without custom code per tenant.
 
+## Examples
+- Good requirement: "Admins can invite staff and assign roles within their tenant."
+- Bad requirement: "Admins can do anything if they are trusted."
+- Good requirement: "Tenant administrators can view only their tenant's operational dashboard."
+- Bad requirement: "Operators can export all school records into one shared spreadsheet."
+
 ## Non-Functional Requirements
 - Security: strong tenant isolation, auditable actions, protected data handling.
 - Reliability: predictable behavior under normal and peak use.
@@ -64,6 +78,34 @@ Define the product-level requirements for the School ERP + LMS SaaS platform so 
 - Accessibility: usable by diverse school communities.
 - Maintainability: modular design and clear ownership.
 - Observability: logs, metrics, and traces sufficient for support and incident response.
+
+## Acceptance Criteria Pattern
+- Each user-facing requirement should have a clear success condition.
+- Each security-related requirement should have a verification method.
+- Each tenant-sensitive requirement should state how isolation is preserved.
+
+## Decision Record
+- Decision: Requirements are organized around personas, core domains, and non-functional expectations.
+- Status: Approved
+- Reason: The platform needs a stable product language that downstream design and implementation can reference.
+- Alternatives considered: Feature-list-only requirements and purely technical requirements.
+- Date: `[TBD]`
+
+## AI Contribution Rules
+- AI tools may draft requirement wording, but they may not invent requirements without an approved source.
+- AI tools must preserve traceability from requirement to user need or business goal.
+- AI tools must flag ambiguous language that could cause implementation drift.
+- AI tools must not downgrade security or tenant requirements to improve readability.
+
+## Review Requirements
+- Product, architecture, and security reviewers must validate all new or changed requirements.
+- Reviewers should confirm that each requirement is testable and non-contradictory.
+- High-risk requirements need explicit tenant isolation and security review.
+
+## Change Management Requirements
+- Add or modify requirements through a controlled review process.
+- Keep a change note when a requirement is clarified, split, or retired.
+- Preserve historical intent when changing a requirement that downstream teams may already be using.
 
 ## Success Metrics
 - Adoption rate: `[TBD]`

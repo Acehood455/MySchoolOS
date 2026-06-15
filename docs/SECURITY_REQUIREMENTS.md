@@ -18,6 +18,7 @@ Define the security baseline for the platform so all contributors build and revi
 - Any exception must be documented, approved, and time-bound.
 - Security requirements override convenience, speed, and feature requests.
 - Unresolved items must remain `[TBD]` rather than guessed.
+- AI tools must treat security requirements as binding constraints.
 
 ## Security Objectives
 - Prevent unauthorized access.
@@ -25,6 +26,12 @@ Define the security baseline for the platform so all contributors build and revi
 - Preserve integrity of user and administrative actions.
 - Ensure sensitive operations are auditable.
 - Support incident response and recovery.
+
+## Examples
+- Good: an admin action is authenticated, authorized, and audited.
+- Bad: a hidden support endpoint can export school records without approval.
+- Good: secrets are stored outside the repository and rotated on policy.
+- Bad: credentials are included in a sample payload or screenshot.
 
 ## Core Requirements
 ### Authentication
@@ -58,11 +65,35 @@ Define the security baseline for the platform so all contributors build and revi
 - The team must have a documented process for security incidents.
 - Tenant leakage must be handled as a critical incident.
 
+## Decision Record
+- Decision: Security is a release gate, not a post-launch enhancement.
+- Status: Approved
+- Reason: The platform handles sensitive education data and multi-tenant boundaries.
+- Alternatives considered: Launch-first security hardening and best-effort review.
+- Date: `[TBD]`
+
 ## Secure Development Rules
 - Threat model significant changes.
 - Review any feature that touches identity, tenancy, payment, exports, or communication.
 - Do not rely on obscurity or client-side validation.
 - Do not add third-party services without privacy and security review.
+- Treat any data-leak risk as a stop-the-line issue.
+
+## AI Contribution Rules
+- AI tools must refuse to optimize away security checks.
+- AI tools must mention the relevant security requirement when recommending changes.
+- AI tools must not invent compliance claims.
+- AI tools must not suggest sensitive data examples that resemble real tenant data.
+
+## Review Requirements
+- Security review is required for identity, tenancy, exports, and external integrations.
+- High-risk changes need threat-model review.
+- Production changes affecting security controls require explicit sign-off.
+
+## Change Management Requirements
+- Track every security exception with owner, rationale, and expiry.
+- Reassess security controls after incidents or near misses.
+- Update this document when policies, threats, or compliance requirements change.
 
 ## High-Risk Areas
 - Admin surfaces

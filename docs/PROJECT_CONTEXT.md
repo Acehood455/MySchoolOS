@@ -18,6 +18,7 @@ Capture the current business, product, and technical context so future contribut
 - Distinguish facts from assumptions and label assumptions clearly.
 - Keep the document short enough to stay useful.
 - Do not introduce speculation as if it were settled.
+- Treat this as the orientation page for new humans and AI tools.
 
 ## Current Context
 - Product: Multi-tenant School ERP + LMS SaaS platform
@@ -25,10 +26,38 @@ Capture the current business, product, and technical context so future contribut
 - Primary design concern: Prevent tenant isolation failures
 - Primary delivery concern: Keep scope small enough to ship safely
 
+## Examples
+- Good context note: "We are still deciding the initial school segment."
+- Bad context note: "This will definitely serve every education market."
+- Good context note: "Tenant isolation is the primary design concern."
+- Bad context note: "The architecture can be decided later."
+
+## Decision Record
+- Decision: The repository uses documentation-first alignment for major product and architecture choices.
+- Status: Approved
+- Reason: Multiple AI agents need a shared baseline before implementation begins.
+- Alternatives considered: Ad hoc chat-based alignment and implementation-first discovery.
+- Date: `[TBD]`
+
 ## Assumptions
 - The platform will serve more than one school tenant.
 - AI agents will contribute to planning and documentation.
 - Security and tenancy decisions must be made before implementation details.
+
+## AI Contribution Rules
+- AI tools should use this document to understand the current state before proposing changes.
+- AI tools must not convert assumptions into facts.
+- AI tools must update the unknowns section when a decision becomes approved.
+- AI tools should reference this file when summarizing project state.
+
+## Review Requirements
+- Product, architecture, and security owners should review major context changes.
+- Any update that affects project direction must be reflected in the authoritative docs.
+
+## Change Management Requirements
+- Keep the context current with the latest approved project direction.
+- Remove stale assumptions when they are no longer true.
+- If the project direction shifts, update the linked governing documents in the same change window.
 
 ## Unknowns
 - Final target market: `[TBD]`

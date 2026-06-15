@@ -18,6 +18,7 @@ Define the engineering standards that future code must follow so the platform re
 - Any change must preserve readability, security, and consistency.
 - Keep standards practical and enforceable.
 - Unknown details should remain `[TBD]` until the team decides.
+- AI tools must treat these standards as the default style and quality baseline for future code.
 
 ## Standards
 ### General
@@ -52,6 +53,35 @@ Define the engineering standards that future code must follow so the platform re
 ### Reviews
 - Every significant change requires review.
 - Reviewers should check for architecture drift, security issues, and tenant leakage risks.
+
+## Examples
+- Good standard: a small function with a single responsibility and clear domain naming.
+- Bad standard: a utility that knows about every module and every tenant exception.
+- Good standard: tests that cover tenant isolation for critical paths.
+- Bad standard: shipping security-sensitive logic without verification.
+
+## Decision Record
+- Decision: Coding standards are documented separately from implementation so they can be reviewed independently.
+- Status: Approved
+- Reason: Future code contributors, including AI agents, need a shared quality baseline.
+- Alternatives considered: Enforcing standards only in code review comments.
+- Date: `[TBD]`
+
+## AI Contribution Rules
+- AI tools must follow these standards when drafting future code, tests, or refactors.
+- AI tools must not choose complex patterns unless they are justified by the codebase.
+- AI tools must preserve tenant, security, and architecture boundaries in generated code.
+- AI tools should explicitly note when a suggestion is a placeholder pending language/tooling decisions.
+
+## Review Requirements
+- Code reviews should check naming, structure, security, and maintainability.
+- High-risk changes require targeted review for tenant isolation and authorization.
+- Reviewers should reject code that creates hidden coupling or unclear ownership.
+
+## Change Management Requirements
+- Update standards when tooling, framework conventions, or quality expectations change.
+- Keep changes explicit so future contributors know which standards are current.
+- Preserve compatibility guidance when introducing new conventions.
 
 ## Language and Tooling
 - Primary language(s): `[TBD]`

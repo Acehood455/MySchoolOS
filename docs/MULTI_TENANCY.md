@@ -19,6 +19,7 @@ Define how tenant isolation, tenant context, and shared platform operations must
 - Any tenancy-related change must be reviewed for data leakage, authorization, and operational impact.
 - All open tenancy choices must be labeled `[TBD]`.
 - Never trade isolation for convenience.
+- AI tools must treat tenant isolation as a core invariant, not a runtime option.
 
 ## Tenancy Principles
 - Each request, job, and user action must resolve to an explicit tenant context when tenant-scoped.
@@ -26,27 +27,58 @@ Define how tenant isolation, tenant context, and shared platform operations must
 - Tenant context must not be inferred ambiguously.
 - Cross-tenant reporting or administration requires explicit approval and safe aggregation rules.
 
+## Examples
+- Good: a school admin sees only records for their tenant.
+- Bad: an internal support tool returns all tenants by default and filters later in the UI.
+- Good: a background job includes tenant context and is audited.
+- Bad: a shared queue processes tenant data without any tenant identity.
+
 ## Tenant Model
 - Primary tenancy model: `[TBD]`
 - Tenant identification source of truth: `[TBD]`
 - Tenant provisioning flow: `[TBD]`
 - Tenant lifecycle states: `[TBD]`
 
+## Decision Record
+- Decision: Tenant context must be explicit and verified wherever tenant-scoped data is used.
+- Status: Approved
+- Reason: Shared SaaS operation creates a high risk of boundary confusion without explicit rules.
+- Alternatives considered: Implicit tenant inference and global shared data access with UI filtering.
+- Date: `[TBD]`
+
 ## Isolation Requirements
 - No data fetch, mutation, or export may cross tenant boundaries without explicit authorization and review.
 - Background jobs must carry tenant context where applicable.
 - Caches, queues, search indexes, file storage, and observability tools must be tenant-safe.
 - Shared operational tooling must not expose tenant data outside authorized support roles.
+- Tenant-aware permissions must be checked before data is read or exported.
 
 ## Cross-Tenant Operations
 - Aggregated metrics are allowed only if they are intentionally non-identifying and reviewed for leakage risk.
 - Support actions affecting multiple tenants must have explicit operator authorization.
 - Global administrative views must be tightly restricted and audited.
+- Any exception for cross-tenant visibility must be documented and scoped.
 
 ## Tenant Configuration
 - Tenant-specific configuration must remain within approved boundaries.
 - Configuration should not become a hidden code fork.
 - Default behavior should be safe for a newly created tenant.
+
+## AI Contribution Rules
+- AI tools must flag any design that leaves tenant identity ambiguous.
+- AI tools must not recommend UI-only filtering as an isolation mechanism.
+- AI tools must not propose shared storage, caching, or search patterns without tenant-safety considerations.
+- AI tools must preserve the distinction between tenant-scoped and global operations.
+
+## Review Requirements
+- Any change touching tenant context must be reviewed by architecture and security.
+- High-risk cross-tenant paths need explicit validation.
+- Support and operations owners should review any global admin capability.
+
+## Change Management Requirements
+- Document the tenant model before implementation changes begin.
+- Keep a change log for any deviation from standard tenant scoping.
+- Revalidate all tenant-sensitive docs when the isolation strategy changes.
 
 ## Risk Areas
 - Background processing without tenant context

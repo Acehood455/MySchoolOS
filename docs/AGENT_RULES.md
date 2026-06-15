@@ -17,6 +17,7 @@ Define how multiple AI agents must operate in this repository so they remain con
 - Update only when agent workflow rules change.
 - Any rule change must preserve the existing guardrails on security, tenancy, and scope control.
 - Keep unresolved workflow details as `[TBD]`.
+- All AI tools contributing here must follow the same rules, even if their default behavior differs.
 
 ## Agent Operating Rules
 1. Do not generate application code when asked for documentation-only work.
@@ -27,6 +28,14 @@ Define how multiple AI agents must operate in this repository so they remain con
 6. Do not add unapproved features during documentation, planning, or review tasks.
 7. Do not overwrite user changes unless explicitly instructed.
 8. Do not create hidden dependencies between documents without updating the source references.
+9. Do not rewrite a document in a way that erases unresolved decisions.
+10. Do not answer with code when the request is for documentation governance.
+
+## Examples
+- Good agent behavior: identify a tenancy conflict and stop to clarify rather than guessing.
+- Good agent behavior: update the related docs together after a change to architecture.
+- Bad agent behavior: inventing a permission model because a prompt asked for one.
+- Bad agent behavior: merging documents silently and losing traceability.
 
 ## Required Behavior
 - Read the governing docs before making changes.
@@ -34,6 +43,31 @@ Define how multiple AI agents must operate in this repository so they remain con
 - Use `[TBD]` for unresolved decisions.
 - Keep changes small, traceable, and aligned to the current task.
 - Surface conflicts instead of silently resolving them.
+- Prefer explicit uncertainty over false confidence.
+
+## Decision Record
+- Decision: All AI contributors must use the docs as the authoritative source of truth.
+- Status: Approved
+- Reason: Multiple agents need one shared policy surface to avoid drift.
+- Alternatives considered: Per-agent local conventions and no shared governance document.
+- Date: `[TBD]`
+
+## AI Contribution Rules
+- AI tools must read the governing documents before proposing changes.
+- AI tools must state when a request conflicts with a non-negotiable.
+- AI tools must preserve terms like tenant, module, and owner consistently.
+- AI tools must not cross from documentation into implementation when instructed not to.
+- If uncertain, AI tools should use `[TBD]` rather than inventing a decision.
+
+## Review Requirements
+- High-risk AI-generated changes require human review.
+- Any change touching security, tenancy, or MVP scope requires cross-functional review.
+- Reviewers should check whether the AI preserved the source-of-truth hierarchy.
+
+## Change Management Requirements
+- Record why a rule was added or changed.
+- Keep the rules short enough that contributors will actually read them.
+- Update dependencies when a change in one doc affects AI behavior elsewhere.
 
 ## Document Priority Order
 1. `NON_NEGOTIABLES.md`
@@ -47,12 +81,18 @@ Define how multiple AI agents must operate in this repository so they remain con
 9. `VISION.md`
 10. `CODING_STANDARDS.md`
 
+## Operational Notes for AI Tools
+- Codex, Loveable, Claude Code, Gemini, and Cursor should all treat this same priority order.
+- Agent output should reference the governing doc instead of restating policy from memory.
+- When documents disagree, the higher-priority doc wins until a human resolves the conflict.
+
 ## Escalation Triggers
 - Any request that changes tenant isolation assumptions
 - Any request that changes security controls
 - Any request that expands MVP scope
 - Any request that introduces a new major module
 - Any request that conflicts with documented ownership
+- Any request to provide implementation details when documentation-only work is requested
 
 ## Open Decisions
 - Agent review workflow: `[TBD]`
