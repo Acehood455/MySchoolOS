@@ -1,0 +1,78 @@
+# Security Requirements
+
+## Purpose
+Define the security baseline for the platform so all contributors build and review features with the same expectations for confidentiality, integrity, availability, and auditability.
+
+## Scope
+- Covers authentication, authorization, data protection, auditing, secrets, incident readiness, and secure development expectations.
+- Applies to code, architecture, operations, documentation, and AI-generated changes.
+- Does not include implementation code or detailed cryptographic configuration.
+
+## Ownership
+- Primary owner: Security Lead
+- Supporting owners: Architecture Lead, Platform Operations Lead, Engineering Lead
+- AI agent role: Never propose changes that weaken the security baseline.
+
+## Update Rules
+- Update only after security review.
+- Any exception must be documented, approved, and time-bound.
+- Security requirements override convenience, speed, and feature requests.
+- Unresolved items must remain `[TBD]` rather than guessed.
+
+## Security Objectives
+- Prevent unauthorized access.
+- Prevent tenant data leakage.
+- Preserve integrity of user and administrative actions.
+- Ensure sensitive operations are auditable.
+- Support incident response and recovery.
+
+## Core Requirements
+### Authentication
+- User authentication must be robust and centrally enforced.
+- Service-to-service authentication must be explicit and controlled.
+- Session handling must follow approved security policy: `[TBD]`.
+
+### Authorization
+- Every protected action must be authorized server-side.
+- Privileges must be role-based and scope-limited.
+- Administrative access must be minimized and auditable.
+
+### Data Protection
+- Sensitive data must be protected in storage and transit.
+- Data exposure in logs, diagnostics, or exports must be prevented.
+- Tenant-scoped data must remain isolated by design and review.
+
+### Secrets and Credentials
+- Secrets must never appear in source control or public documentation.
+- Secret rotation and revocation processes must exist and be documented.
+
+### Auditing
+- Security-relevant events must be logged with sufficient context.
+- Audit data must resist tampering and support investigations.
+
+### Vulnerability Management
+- Dependencies, infrastructure, and application behavior must be reviewed for vulnerabilities.
+- High-risk issues must block release until addressed or formally accepted.
+
+### Incident Readiness
+- The team must have a documented process for security incidents.
+- Tenant leakage must be handled as a critical incident.
+
+## Secure Development Rules
+- Threat model significant changes.
+- Review any feature that touches identity, tenancy, payment, exports, or communication.
+- Do not rely on obscurity or client-side validation.
+- Do not add third-party services without privacy and security review.
+
+## High-Risk Areas
+- Admin surfaces
+- Data export flows
+- File uploads and downloads
+- Background jobs
+- Integration tokens
+- Cross-tenant reporting
+
+## Open Decisions
+- Required compliance frameworks: `[TBD]`
+- Encryption and key management standard: `[TBD]`
+- Incident severity policy: `[TBD]`
