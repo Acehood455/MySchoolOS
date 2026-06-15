@@ -1,102 +1,113 @@
 # Non-Negotiables
 
 ## Purpose
-Record the hard constraints that must never be violated. This document exists to prevent architecture drift, tenant isolation bugs, and security regressions.
+This document is the constitution of the project. It defines absolute requirements that govern every product decision, architecture decision, implementation decision, AI contribution, review, and release.
 
 ## Scope
-- Applies to all product decisions, architecture changes, agent-generated edits, and future module designs.
-- Defines absolute guardrails, not preferences.
+- Applies to all documentation, product planning, design, architecture, implementation, testing, deployment, operations, and support work.
+- Applies to every AI tool that contributes to the codebase or documentation.
 - Does not describe implementation code or database schema.
 
 ## Ownership
 - Primary owner: Architecture Lead
 - Security co-owner: Security Lead
-- Change approval: Product Owner plus Architecture Lead for any exception request
-- AI agent role: Treat this document as higher priority than roadmap convenience or feature requests.
+- Product co-owner: Product Lead
+- Exception approval: Product Lead plus Architecture Lead plus Security Lead
+- AI agent role: Treat this document as the highest-priority project authority.
 
 ## Update Rules
-- Changes require explicit human approval and a written rationale.
-- Exceptions must be time-bound, documented, and associated with a mitigation plan.
-- If a rule becomes obsolete, it must be replaced with a stronger or equally strong safeguard.
-- Never silently weaken a non-negotiable to unblock delivery.
-- This document outranks convenience, speed, roadmap pressure, and implementation preference.
-- Every AI tool must treat this as the primary guardrail document.
+- Changes require explicit human approval.
+- Changes require a written rationale and a linked decision record.
+- Changes must preserve or strengthen the existing standard.
+- No rule may be softened to reduce delivery friction.
+- Deprecated rules must be replaced with rules that are equal in strength or stronger.
 
-## Hard Constraints
-1. Tenant data must never be accessible across tenant boundaries.
-2. Authentication and authorization must be enforced server-side for every protected action.
-3. Least privilege is mandatory for users, services, agents, and infrastructure access.
-4. Sensitive data must be protected at rest, in transit, and in logs.
-5. No feature may be shipped without a documented tenant impact review.
-6. No module may assume a single-school deployment model.
-7. No agent may invent schema, APIs, permissions, or workflows that are not explicitly approved.
-8. No direct production changes may bypass review, traceability, and rollback planning.
-9. No feature should create hidden coupling between tenants.
-10. No shortcut may compromise auditability of user, administrative, or system actions.
-11. No feature flag may bypass security, tenancy, or audit controls.
-12. No white-label customization may weaken tenant identity or operator accountability.
+## Constitution
+All rules in this document are absolute requirements. Any conflict with these rules is a project defect, not a preference difference.
+
+## Non-Negotiable Rules
+1. Every tenant-owned record must belong to exactly one school.
+2. No cross-school data access is permitted.
+3. No request, job, or integration may act on tenant data without explicit tenant context.
+4. No tenant context may be inferred ambiguously.
+5. No tenant identifier may be omitted from tenant-scoped operations.
+6. No shared cache, queue, index, export, or file store may leak data across schools.
+7. No global admin tool may expose tenant data without explicit authorization and audit logging.
+8. No authentication or authorization decision may rely on client-side enforcement.
+9. All protected actions must be authorized on the server.
+10. Least privilege is mandatory for every user, service, agent, and system identity.
+11. Every privileged action must be auditable.
+12. Every security-relevant action must leave a traceable record.
+13. No secret may be stored in source control.
+14. No secret may be stored in documentation.
+15. No secret may be exposed in logs, screenshots, examples, or sample payloads.
+16. No production change may bypass review.
+17. No production change may bypass rollback planning.
+18. No production change may bypass traceability.
+19. No feature may ship without a documented tenant impact review.
+20. No feature may ship without a documented security review when it touches identity, tenancy, exports, finance, communication, or sensitive data.
+21. No module may assume a single-school deployment model.
+22. No module may hard-code tenant-specific behavior into shared platform logic.
+23. No business rule may exist only in implementation if it can be documented first.
+24. All business rules must be documented before implementation starts.
+25. No architecture change may be made without an ADR update.
+26. No module boundary may change without updating the module catalog.
+27. No tenancy model change may be made without updating the multi-tenancy document.
+28. No security control change may be made without updating the security requirements document.
+29. No roadmap change may contradict the MVP scope.
+30. No roadmap change may add scope without a clear user problem and owner.
+31. No feature creep is permitted by default.
+32. No AI agent may modify protected zones without explicit approval.
+33. Protected zones include `NON_NEGOTIABLES.md`, `SECURITY_REQUIREMENTS.md`, `MULTI_TENANCY.md`, `ARCHITECTURE.md`, and any other document marked as authoritative.
+34. No AI agent may invent schema, APIs, permissions, integrations, or workflows that are not explicitly approved.
+35. No AI agent may convert uncertainty into fact.
+36. No AI agent may remove unresolved `[TBD]` values without a human-approved decision.
+37. No AI agent may answer with implementation code when documentation-only work is requested.
+38. No feature flag may bypass security, tenancy, or audit requirements.
+39. No white-label setting may weaken tenant identity or operator accountability.
+40. No internal tool may be exempt from the same security and tenancy rules as the product itself.
 
 ## Examples
-- Allowed: a role may access only the tenant data explicitly associated with the active request context.
-- Not allowed: a shared admin view that reveals school records from another tenant for convenience.
-- Allowed: a security fix that delays a release until tenant leakage risk is resolved.
-- Not allowed: a temporary bypass of authorization checks in order to demo a feature.
+- Example of compliance: a tenant-scoped student record is stored and accessed only within one school boundary.
+- Example of violation: a support dashboard lists learner records from multiple schools without explicit authorization.
+- Example of compliance: an ADR is updated before architecture boundaries change.
+- Example of violation: a shortcut is merged because the team "knows what it means" but nothing is documented.
+- Example of compliance: an AI tool asks for approval before changing a protected document.
+- Example of violation: an AI tool rewrites a security rule because it thinks the wording is too strict.
 
 ## Decision Record
-- Decision: Hard constraints are mandatory and exception-driven only.
+- Decision: The project constitution is absolute and exception-driven only.
 - Status: Approved
-- Reason: The platform handles sensitive school data across many tenants.
-- Alternatives considered: Soft guidelines and phase-specific constraints.
+- Reason: The platform is multi-tenant and handles sensitive school data.
+- Alternatives considered: Soft guidance, best-effort rules, and team-specific conventions.
 - Date: `[TBD]`
 
-## Product Guardrails
-- Prefer simple, composable workflows over broad, monolithic screens.
-- Prefer shared platform capabilities over tenant-specific special cases.
-- Avoid feature creep by requiring a clear user problem, target persona, and success metric for every new request.
-- Reject duplicated workflows unless there is a proven user or compliance requirement.
-
-## Security Guardrails
-- Never store secrets in source control or documentation.
-- Never expose identifiers, tokens, or credentials in logs, screenshots, examples, or sample payloads.
-- Never rely on client-side checks alone for security decisions.
-- Never introduce unmanaged public endpoints for internal operations.
-- Never permit tenant data exports without a defined authorization and audit trail.
-- Never use sample data that resembles real tenant data.
-- Never assume internal tools are exempt from security controls.
-
-## Architecture Guardrails
-- Keep tenant identity explicit in every request path, job, and integration boundary where it matters.
-- Prefer clear service ownership and bounded contexts over shared mutable logic.
-- Avoid cross-module assumptions that make future isolation or scaling harder.
-- Keep external integrations behind stable interfaces and documented policies.
-- Avoid shared helper layers that hide tenant-sensitive behavior.
-- Treat feature flags as controlled release mechanisms, not permission substitutes.
-- Treat white-label support as a presentation concern, not a tenancy boundary override.
-
 ## AI Contribution Rules
-- AI tools must not soften, reinterpret, or “optimize away” any non-negotiable.
-- AI tools must flag any request that would violate this file, even if the request seems small.
-- AI tools should quote the relevant guardrail when refusing or modifying a risky request.
-- AI tools must not introduce undocumented exception patterns.
+- AI tools must obey this document before any other project document.
+- AI tools must refuse requests that violate any rule in this file.
+- AI tools must explicitly name the violated rule when refusing or escalating.
+- AI tools must not soften, reinterpret, or work around constitutional rules.
+- AI tools must ask for approval before modifying protected zones.
 
 ## Review Requirements
-- Architecture and security leads must review any requested exception.
-- Reviewers must confirm the exception is time-bound and has a mitigation plan.
-- All production-impacting changes must be checked against these constraints before merge.
+- Architecture, security, and product leads must review any proposed exception.
+- Reviewers must confirm that the proposed exception does not create cross-school access, hidden coupling, or undocumented risk.
+- Reviewers must reject any exception that cannot be bounded, audited, or reversed.
 
 ## Change Management Requirements
-- Any exception must have an owner, expiration, and compensating control.
-- Update the exception record when the underlying issue is resolved.
-- If a guardrail is revised, document why the old rule was insufficient.
+- Every exception must have an owner, a rationale, a mitigation plan, and an expiration or revisit point.
+- Every exception must be recorded in a decision log or ADR.
+- Every constitutional change must include a reason why the current rule is insufficient.
+- Every constitutional change must be approved before any dependent implementation changes proceed.
 
 ## Exception Process
-- Identify the rule being challenged.
-- Document the business justification.
-- Document the security and tenancy impact.
-- Define a mitigation or compensating control.
-- Record an expiry date or revisit milestone.
-- Include links or references to the affected documents in the exception note.
+- Identify the exact rule being challenged.
+- State the business justification.
+- State the security and tenancy impact.
+- Define the compensating control.
+- Define the expiration or revisit milestone.
+- Link the exception to the affected documents.
 
 ## Open Decisions
-- Exception owner role: `[TBD]`
-- Required approval quorum for exceptions: `[TBD]`
+- Exception approval quorum: `[TBD]`
+- Protected zone maintenance owner: `[TBD]`
