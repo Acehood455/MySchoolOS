@@ -50,6 +50,7 @@ Record major architecture and platform decisions in a durable, reviewable format
 | ADR-007 | 2026-06-15 | Session Authentication and Admin-Created Users | Approved |
 | ADR-008 | 2026-06-15 | Final Role Matrix | Approved |
 | ADR-009 | 2026-06-15 | Final Attendance and Results Rules | Approved |
+| ADR-010 | 2026-06-16 | Final Implementation Plan | Approved |
 
 ## ADR-001: Multi-tenant Architecture
 - ADR Number: ADR-001
@@ -254,6 +255,29 @@ Record major architecture and platform decisions in a durable, reviewable format
   - `MODULE_CATALOG.md`
 - Notes: These rules are intentionally simple for the first release.
 
+## ADR-010: Final Implementation Plan
+- ADR Number: ADR-010
+- Date: 2026-06-16
+- Status: Approved
+- Decision: The implementation plan is finalized as the approved sequence for foundation, core school workflows, and operational readiness.
+- Context: The team needs a stable delivery sequence so documentation, planning, and implementation stay aligned on what gets built first.
+- Alternatives Considered:
+  - Ad hoc feature-by-feature sequencing
+  - Broad parallel delivery without phase gates
+  - A roadmap with no approved implementation order
+- Reasoning: A finalized plan reduces drift, keeps MVP scope disciplined, and gives contributors a clear order of operations.
+- Consequences:
+  - Foundation work must precede workflow expansion.
+  - Tenant isolation, session auth, and admin-created users remain first-phase requirements.
+  - Attendance and results workflows stay inside the approved core sequence.
+  - Operational readiness work must remain part of the release path, not an afterthought.
+- Related Docs:
+  - `IMPLEMENTATION_PLAN.md`
+  - `ROADMAP.md`
+  - `MVP_SCOPE.md`
+  - `PRODUCT_REQUIREMENTS.md`
+- Notes: Future delivery changes must be reflected here and in the implementation plan together.
+
 ## Review Requirements
 - New ADRs require review from architecture and affected domain owners.
 - High-risk decisions require security review.
@@ -266,5 +290,5 @@ Record major architecture and platform decisions in a durable, reviewable format
 - Link ADRs from affected docs when a decision changes them.
 
 ## Open Decisions
-- ADR numbering policy for future documents: `[TBD]`
-- Whether rejected ADRs should be indexed permanently: `[TBD]`
+- ADR numbering policy for future documents: Sequential numbering with no reuse.
+- Whether rejected ADRs should be indexed permanently: Yes. Rejected ADRs remain indexed for traceability.

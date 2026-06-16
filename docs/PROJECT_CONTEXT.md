@@ -27,6 +27,7 @@ Capture the current business, product, and technical context so future contribut
 - Primary delivery concern: Keep scope small enough to ship safely
 - Primary platform principles: multi-tenant first, security first, documentation first, modular architecture, feature flags, and white-label support
 - Current data model decision: single Neon PostgreSQL database with shared tables and `school_id` tenant isolation
+- Current identity decision: server-managed session authentication with admin-created users only in the MVP
 
 ## Examples
 - Good context note: "We are still deciding the initial school segment."
@@ -39,7 +40,7 @@ Capture the current business, product, and technical context so future contribut
 - Status: Approved
 - Reason: Multiple AI agents need a shared baseline before implementation begins.
 - Alternatives considered: Ad hoc chat-based alignment and implementation-first discovery.
-- Date: `[TBD]`
+- Date: 2026-06-16
 
 ## Assumptions
 - The platform will serve more than one school tenant.
@@ -63,9 +64,9 @@ Capture the current business, product, and technical context so future contribut
 
 ## Unknowns
 - Final target market: `[TBD]`
-- Application hosting topology: `[TBD]`
+- Application hosting topology: One shared web app and API surface, with a worker only if background jobs require it.
 - Primary integrations: `[TBD]`
-- Compliance requirements: `[TBD]`
+- Compliance requirements: Deferred until the launch market is chosen.
 
 ## Working Agreements
 - Prefer documentation-first decisions for major platform choices.
@@ -73,5 +74,5 @@ Capture the current business, product, and technical context so future contribut
 - Preserve a single source of truth for constraints and priorities.
 
 ## Open Decisions
-- Source of truth for roadmap updates: `[TBD]`
-- Source of truth for module ownership: `[TBD]`
+- Source of truth for roadmap updates: Product owns roadmap updates.
+- Source of truth for module ownership: Architecture owns module ownership.

@@ -79,7 +79,7 @@ Provide the product and delivery sequence for the platform while preventing feat
 - Status: Approved
 - Reason: The platform must prove trust, isolation, and supportability before expanding.
 - Alternatives considered: Big-bang release and feature-area-by-feature-area launch with no phase gates.
-- Date: `[TBD]`
+- Date: 2026-06-16
 
 ## AI Contribution Rules
 - AI tools may reorganize roadmap language for clarity, but they may not add unsupported themes.
@@ -105,6 +105,6 @@ Provide the product and delivery sequence for the platform while preventing feat
 
 ## Open Decisions
 - MVP release target date: `[TBD]`
-- Pilot tenant count: `[TBD]`
-- Expansion themes: `[TBD]`
-- White-label rollout timing: `[TBD]`
+- Pilot tenant count: One to three pilot tenants.
+- Expansion themes: Support tooling, operational reporting, and controlled white-label basics.
+- White-label rollout timing: After core stability is proven in MVP.

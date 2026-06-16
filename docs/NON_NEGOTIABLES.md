@@ -80,7 +80,7 @@ All rules in this document are absolute requirements. Any conflict with these ru
 - Status: Approved
 - Reason: The platform is multi-tenant and handles sensitive school data.
 - Alternatives considered: Soft guidance, best-effort rules, and team-specific conventions.
-- Date: `[TBD]`
+- Date: 2026-06-16
 
 ## AI Contribution Rules
 - AI tools must obey this document before any other project document.
@@ -109,5 +109,5 @@ All rules in this document are absolute requirements. Any conflict with these ru
 - Link the exception to the affected documents.
 
 ## Open Decisions
-- Exception approval quorum: `[TBD]`
-- Protected zone maintenance owner: `[TBD]`
+- Exception approval quorum: Product Lead, Architecture Lead, and Security Lead.
+- Protected zone maintenance owner: Architecture Lead.

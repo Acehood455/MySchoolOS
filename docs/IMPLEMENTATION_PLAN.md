@@ -23,4 +23,5 @@ Record the finalized implementation sequence so product, engineering, architectu
 
 ## Notes
 - This plan is intentionally narrow and pilot-driven.
+- This plan is approved and recorded in ADR-010.
 - Any future scope expansion must be reviewed against the governing docs.

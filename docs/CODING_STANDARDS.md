@@ -67,7 +67,7 @@ Define the engineering standards that future code must follow so the platform re
 - Status: Approved
 - Reason: Future code contributors, including AI agents, need a shared quality baseline.
 - Alternatives considered: Enforcing standards only in code review comments.
-- Date: `[TBD]`
+- Date: 2026-06-16
 
 ## AI Contribution Rules
 - AI tools must follow these standards when drafting future code, tests, or refactors.

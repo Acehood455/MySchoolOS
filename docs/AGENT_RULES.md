@@ -138,7 +138,7 @@ AI contributors must read documents in this order before making changes:
 - Status: Approved
 - Reason: Multiple agents need one shared policy surface to avoid drift.
 - Alternatives considered: Per-agent local conventions and no shared governance document.
-- Date: `[TBD]`
+- Date: 2026-06-16
 
 ## AI Contribution Rules
 - AI tools must read the governing documents before proposing changes.
@@ -191,5 +191,5 @@ AI contributors must read documents in this order before making changes:
 - Any request to edit protected files without approval
 
 ## Open Decisions
-- Agent review workflow: `[TBD]`
-- Required approval chain for high-risk edits: `[TBD]`
+- Agent review workflow: Human review is required for protected files and any high-risk change; cross-functional review is required for tenancy, security, finance, exports, auth, or module boundary changes.
+- Required approval chain for high-risk edits: Product, Architecture, and Security review before approval.

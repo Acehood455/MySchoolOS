@@ -48,7 +48,7 @@ Define how tenant isolation, tenant context, and shared platform operations must
 - Status: Approved
 - Reason: Shared SaaS operation creates a high risk of boundary confusion without explicit rules.
 - Alternatives considered: Implicit tenant inference and global shared data access with UI filtering.
-- Date: `[TBD]`
+- Date: 2026-06-16
 
 ## Isolation Requirements
 - No data fetch, mutation, or export may cross tenant boundaries without explicit authorization and review.
@@ -98,4 +98,4 @@ Define how tenant isolation, tenant context, and shared platform operations must
 - Any suspected leak must be treated as a severity issue.
 
 ## Open Decisions
-- Cross-tenant reporting policy: `[TBD]`
+- Cross-tenant reporting policy: No cross-tenant reporting in MVP except intentionally non-identifying aggregates.

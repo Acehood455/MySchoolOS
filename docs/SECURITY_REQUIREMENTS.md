@@ -80,7 +80,7 @@ Define the security baseline for the platform so all contributors build and revi
 - Status: Approved
 - Reason: The platform handles sensitive education data and multi-tenant boundaries.
 - Alternatives considered: Launch-first security hardening and best-effort review.
-- Date: `[TBD]`
+- Date: 2026-06-16
 
 ## Secure Development Rules
 - Threat model significant changes.
@@ -114,6 +114,6 @@ Define the security baseline for the platform so all contributors build and revi
 - Cross-tenant reporting
 
 ## Open Decisions
-- Required compliance frameworks: `[TBD]`
-- Encryption and key management standard: `[TBD]`
-- Incident severity policy: `[TBD]`
+- Required compliance frameworks: Defer formal compliance commitments until the launch market is chosen, then adopt the smallest applicable baseline.
+- Encryption and key management standard: Use the managed encryption and key rotation capabilities of the chosen hosting stack and document them clearly.
+- Incident severity policy: Treat tenant leakage and auth bypass as highest severity, then map outages and degraded service beneath that.

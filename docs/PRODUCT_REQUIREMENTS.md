@@ -126,7 +126,7 @@ Define the product-level requirements for `School OS` so that all contributors b
 - Status: Approved
 - Reason: The platform needs a stable product language that downstream design and implementation can reference.
 - Alternatives considered: Feature-list-only requirements and purely technical requirements.
-- Date: `[TBD]`
+- Date: 2026-06-16
 
 ## AI Contribution Rules
 - AI tools may draft requirement wording, but they may not invent requirements without an approved source.
@@ -158,6 +158,6 @@ Define the product-level requirements for `School OS` so that all contributors b
 - Unlimited white-label customization outside approved brand controls.
 
 ## Open Decisions
-- Initial user journey priorities: `[TBD]`
-- Compliance targets: `[TBD]`
-- Supported school types: `[TBD]`
+- Initial user journey priorities: Tenant onboarding, staff invitation, role assignment, attendance, results, parent communication, and school admin basics.
+- Compliance targets: Defer formal compliance commitments until the launch market is chosen.
+- Supported school types: Primary and secondary schools.

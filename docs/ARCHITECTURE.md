@@ -41,7 +41,7 @@ Define the architectural direction, system boundaries, and decision principles s
 
 ## System View
 ### Client Layer
-- Web and other approved client surfaces: `[TBD]`
+- Web app first for MVP; other approved client surfaces remain deferred until explicitly reviewed.
 - Must honor role-based access and tenant context.
 
 ### Application Layer
@@ -78,21 +78,21 @@ Define the architectural direction, system boundaries, and decision principles s
 - Shared tables are allowed only when every tenant-owned row is scoped by `school_id` and every tenant-scoped query resolves tenant context before access.
 
 ## Decision Areas
-- Deployment topology: `[TBD]`
-- Service decomposition strategy: `[TBD]`
-- Eventing approach: `[TBD]`
-- Caching strategy: `[TBD]`
-- Search strategy: `[TBD]`
-- File storage strategy: `[TBD]`
-- Feature flag platform choice: `[TBD]`
-- White-label presentation strategy: `[TBD]`
+- Deployment topology: One shared web app and one API surface, with a separate worker only if background jobs require it.
+- Service decomposition strategy: Keep one deployable product core and avoid microservices until scale proves they are needed.
+- Eventing approach: Use direct application events plus a worker queue only where needed.
+- Caching strategy: Avoid distributed caching until a concrete performance problem exists, then scope every cache key by tenant.
+- Search strategy: Use a tenant-scoped search model only when search is needed, and keep the first version simple.
+- File storage strategy: Isolate every object path or bucket by tenant and keep file access server-controlled.
+- Feature flag platform choice: Use a lightweight feature-flag system that supports per-tenant targeting and auditability.
+- White-label presentation strategy: Implement branding as theme tokens and configuration, not tenant-specific code.
 
 ## Decision Record
 - Decision: The architecture is boundary-driven and tenant-first.
 - Status: Approved
 - Reason: The platform's core risk is not just scale, but safe multi-tenant operation.
 - Alternatives considered: Monolithic convenience-first design and ad hoc feature-by-feature architecture.
-- Date: `[TBD]`
+- Date: 2026-06-16
 
 ## AI Contribution Rules
 - AI tools may propose design alternatives, but they must preserve the documented principles.
@@ -121,7 +121,7 @@ Define the architectural direction, system boundaries, and decision principles s
 - Architecture decisions should be captured in `ADRS.md` with rationale and alternatives considered.
 
 ## Open Decisions
-- Primary architecture style: `[TBD]`
-- Service ownership model: `[TBD]`
-- Cross-cutting platform stack: `[TBD]`
-- Whether AI insights are a first-party service or integrated capability: `[TBD]`
+- Primary architecture style: Modular monolith with explicit domain boundaries.
+- Service ownership model: One owner per module or platform service, with shared infrastructure only for cross-cutting concerns.
+- Cross-cutting platform stack: Standardize on one observability and one background-processing approach that fits the approved web stack.
+- Whether AI insights are a first-party service or integrated capability: Defer AI insights until the core operating system is stable.

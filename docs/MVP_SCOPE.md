@@ -65,7 +65,7 @@ The MVP is the smallest end-to-end product that allows a real school tenant to o
 - Status: Approved
 - Reason: Early releases must prove safety, usability, and operational viability before expanding.
 - Alternatives considered: Broad alpha release and "build everything core-related" scope.
-- Date: `[TBD]`
+- Date: 2026-06-16
 
 ## AI Contribution Rules
 - AI tools may suggest scope reductions to improve clarity, but they may not add unapproved items.
@@ -96,5 +96,5 @@ The MVP is the smallest end-to-end product that allows a real school tenant to o
 - No polished advanced workflows ahead of core reliability.
 
 ## Open Decisions
-- MVP launch tenant count: `[TBD]`
-- White-label minimum set: `[TBD]`
+- MVP launch tenant count: One to three pilot tenants.
+- White-label minimum set: School name, logo, and primary color.

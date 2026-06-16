@@ -96,7 +96,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 - Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Identity and Access, Communication
-- Notes: Channel policy `[TBD]`.
+- Notes: Channel policy follows approved communication channels and must remain tenant-scoped.
 - Decision record: Notification channels must be approved before use.
 
 ### Administration
@@ -168,7 +168,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 - Status: Approved
 - Reason: The team needs a stable shared vocabulary for planning and architecture.
 - Alternatives considered: No module catalog and implementation-only organization.
-- Date: `[TBD]`
+- Date: 2026-06-16
 
 ## AI Contribution Rules
 - AI tools may suggest module refinements, but they must preserve ownership and boundary clarity.
@@ -187,8 +187,8 @@ Maintain a shared inventory of platform modules so contributors can understand o
 - Revisit the catalog whenever roadmap or architecture decisions change ownership boundaries.
 
 ## Open Decisions
-- Final module boundaries: `[TBD]`
-- Shared services vs domain-specific services: `[TBD]`
-- Deprecation policy for overlapping capabilities: `[TBD]`
-- Whether feature flags are a dedicated module or platform service: `[TBD]`
-- White-label ownership split: `[TBD]`
+- Final module boundaries: The current catalog is the approved boundary set; additions require ADR review.
+- Shared services vs domain-specific services: Shared services are limited to auth, tenant resolution, audit, notifications, observability, and background processing.
+- Deprecation policy for overlapping capabilities: Require explicit deprecation notes, owners, and removal criteria.
+- Whether feature flags are a dedicated module or platform service: Feature flags are a platform service.
+- White-label ownership split: Platform owns implementation; product owns brand policy.

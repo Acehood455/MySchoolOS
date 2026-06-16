@@ -81,7 +81,7 @@ The product is successful when schools can adopt the platform as their primary o
 - Status: Approved
 - Reason: The SaaS model requires explicit tenant boundaries and repeatable operations.
 - Alternatives considered: Single-tenant deployments, custom-fork deployments, and broad horizontal SaaS positioning.
-- Date: `[TBD]`
+- Date: 2026-06-16
 
 ## AI Contribution Rules
 - AI tools must preserve the vision statement unless a human explicitly changes it.
@@ -104,5 +104,5 @@ The product is successful when schools can adopt the platform as their primary o
 - Primary geographic market: `[TBD]`
 - Initial school segment: `[TBD]`
 - Monetization model: `[TBD]`
-- Deployment model: `[TBD]`
-- White-label strategy: `[TBD]`
+- Deployment model: Web-first SaaS with a single shared application stack.
+- White-label strategy: Approved branding controls only; no tenant-specific code forks.
