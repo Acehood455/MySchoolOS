@@ -23,16 +23,16 @@ Provide the product and delivery sequence for the platform while preventing feat
 
 ## Planning Horizons
 ### Now
-- Focus: `[TBD]`
-- Goal: Deliver the minimum safe product foundation.
+- Focus: finalize the MVP foundation, tenant onboarding, session auth, school_id isolation, and the core attendance/results workflows.
+- Goal: deliver the minimum safe product foundation.
 
 ### Next
-- Focus: `[TBD]`
-- Goal: Expand core operational workflows after MVP stability is proven.
+- Focus: support tooling, operational reporting, and controlled white-label basics.
+- Goal: expand core operational workflows after MVP stability is proven.
 
 ### Later
-- Focus: `[TBD]`
-- Goal: Add advanced platform capabilities such as gamification, educational games, live classes, AI insights, and mobile applications only after core adoption and reliability targets are met.
+- Focus: advanced platform capabilities only after core adoption and reliability targets are met.
+- Goal: add gamification, educational games, live classes, AI insights, and mobile applications only after core adoption and reliability targets are met.
 
 ## Release Themes
 - Foundation trust: authentication, tenancy, auditability, and support readiness.

@@ -37,7 +37,8 @@ Define the security baseline for the platform so all contributors build and revi
 ### Authentication
 - User authentication must be robust and centrally enforced.
 - Service-to-service authentication must be explicit and controlled.
-- Session handling must follow approved security policy: `[TBD]`.
+- Session handling must use server-managed session authentication with secure HTTP-only cookies.
+- User accounts are admin-created only in the MVP; self-service account creation is not permitted.
 
 ### Authorization
 - Every protected action must be authorized server-side.

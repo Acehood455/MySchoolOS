@@ -26,6 +26,7 @@ Capture the current business, product, and technical context so future contribut
 - Primary design concern: Prevent tenant isolation failures
 - Primary delivery concern: Keep scope small enough to ship safely
 - Primary platform principles: multi-tenant first, security first, documentation first, modular architecture, feature flags, and white-label support
+- Current data model decision: single Neon PostgreSQL database with shared tables and `school_id` tenant isolation
 
 ## Examples
 - Good context note: "We are still deciding the initial school segment."
@@ -62,8 +63,7 @@ Capture the current business, product, and technical context so future contribut
 
 ## Unknowns
 - Final target market: `[TBD]`
-- Deployment model: `[TBD]`
-- Initial MVP workflows: `[TBD]`
+- Application hosting topology: `[TBD]`
 - Primary integrations: `[TBD]`
 - Compliance requirements: `[TBD]`
 

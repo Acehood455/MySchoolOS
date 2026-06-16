@@ -2,14 +2,7 @@
 
 STOP.
 
-Before making any changes, read these documents in order:
-
-1. `docs/PROJECT_CONTEXT.md`
-2. `docs/NON_NEGOTIABLES.md`
-3. `docs/AGENT_RULES.md`
-4. `docs/ARCHITECTURE.md`
-5. `docs/SECURITY_REQUIREMENTS.md`
-6. The relevant module spec for the requested change
+Before making any changes, read `docs/AGENT_RULES.md` and follow its required reading order.
 
 Do not proceed until all required documents have been reviewed.
 

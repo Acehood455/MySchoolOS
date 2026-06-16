@@ -53,7 +53,7 @@ Define the architectural direction, system boundaries, and decision principles s
 - Each integration requires a documented owner and security review.
 
 ### Data Layer
-- Data storage strategy: `[TBD]`
+- Data storage strategy: single Neon PostgreSQL database with shared tables and `school_id` tenant isolation
 - Data access must enforce tenant boundaries and auditing requirements.
 
 ### Platform Services
@@ -75,6 +75,7 @@ Define the architectural direction, system boundaries, and decision principles s
 - Do not duplicate business rules across modules without a documented reason.
 - Do not hard-code tenant-specific behavior in shared platform code.
 - Do not create "temporary" shortcuts that bypass architectural boundaries.
+- Shared tables are allowed only when every tenant-owned row is scoped by `school_id` and every tenant-scoped query resolves tenant context before access.
 
 ## Decision Areas
 - Deployment topology: `[TBD]`

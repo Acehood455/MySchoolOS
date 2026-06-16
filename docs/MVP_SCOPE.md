@@ -31,16 +31,16 @@ The MVP is the smallest end-to-end product that allows a real school tenant to o
 
 ## In Scope
 - Tenant onboarding and tenant-aware access control
-- Role-based access for core user types
-- Core school administration workflows: `[TBD]`
-- Core learning workflows: `[TBD]`
-- Core attendance workflows: `[TBD]`
-- Core results workflows: `[TBD]`
-- Basic communication workflows: `[TBD]`
-- Operational dashboards or summaries: `[TBD]`
+- Role-based access for School Administrator, Teacher, Learner, Parent or Guardian, Finance Officer, and Platform Operator
+- Core school administration workflows: tenant setup, school profile, staff invitation, and role assignment
+- Core learning workflows: assigned learning activity access and completion
+- Core attendance workflows: record, review, and report attendance
+- Core results workflows: enter, review, and publish results
+- Basic communication workflows: school notices and approved parent follow-up
+- Operational dashboards or summaries: tenant operational dashboard and school administration summary
 - Security and audit foundations
 - Support tooling required to operate pilot tenants
-- Minimal white-label branding controls: `[TBD]`
+- Minimal white-label branding controls: school name, logo, and primary color
 
 ## Examples
 - In scope example: role-based onboarding for a pilot school.
@@ -96,7 +96,5 @@ The MVP is the smallest end-to-end product that allows a real school tenant to o
 - No polished advanced workflows ahead of core reliability.
 
 ## Open Decisions
-- Exact core workflow list: `[TBD]`
-- Pilot success threshold: `[TBD]`
 - MVP launch tenant count: `[TBD]`
 - White-label minimum set: `[TBD]`

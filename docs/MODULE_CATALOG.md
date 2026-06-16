@@ -39,7 +39,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### Identity and Access
 - Purpose: Authentication, session handling, roles, permissions, and administrative access.
 - Owner: Security / Platform
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Tenant resolution, audit logging
 - Notes: Core guardrail module.
@@ -48,7 +48,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### Tenant Management
 - Purpose: Tenant lifecycle, configuration, provisioning, and tenant-level administration.
 - Owner: Platform
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Identity and Access
 - Notes: Must preserve isolation boundaries.
@@ -57,16 +57,16 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### Academic Operations
 - Purpose: School operational workflows such as classes, terms, attendance, timetable, and related academic administration.
 - Owner: Product domain lead
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Identity and Access, Tenant Management
-- Notes: Exact subdomains `[TBD]`.
+- Notes: Core subdomains are classes, terms, attendance, and timetable.
 - Decision record: Subdomain boundaries are deferred until product requirements settle.
 
 ### LMS
 - Purpose: Learning content delivery, assignments, learner progress, and instructional workflows.
 - Owner: Learning domain lead
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Identity and Access, Tenant Management
 - Notes: Keep learner-facing flows simple.
@@ -75,7 +75,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### Communication
 - Purpose: Notices, messaging, and school community communication.
 - Owner: Product domain lead
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Identity and Access
 - Notes: Privacy and moderation rules required.
@@ -84,7 +84,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### Reporting and Analytics
 - Purpose: Operational reporting, summaries, dashboards, and decision support analytics.
 - Owner: Platform analytics lead
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Core domain modules
 - Notes: Avoid data leakage through cross-tenant aggregation.
@@ -93,7 +93,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### Notifications
 - Purpose: Event-driven notifications across supported channels.
 - Owner: Platform
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Identity and Access, Communication
 - Notes: Channel policy `[TBD]`.
@@ -102,7 +102,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### Administration
 - Purpose: Platform administration, support tools, feature flag controls, and operational controls.
 - Owner: Platform operations
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Identity and Access, Audit
 - Notes: Must be tightly controlled.
@@ -111,7 +111,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### Audit and Compliance
 - Purpose: Immutable or tamper-evident records of important actions.
 - Owner: Security / Compliance
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Identity and Access, all actioning modules
 - Notes: Mandatory for sensitive workflows.
@@ -120,7 +120,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### Finance
 - Purpose: Billing-related school finance workflows, receivables, and financial reporting within tenant boundaries.
 - Owner: Finance domain lead
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Identity and Access, Tenant Management, Audit and Compliance
 - Notes: Requires stronger controls than general admin data.
@@ -128,7 +128,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### Results
 - Purpose: Learner results capture, grading, publishing, and report visibility controls.
 - Owner: Academic domain lead
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Identity and Access, Academic Operations, Audit and Compliance
 - Notes: Publication rules must be explicit.
@@ -136,7 +136,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### Parent Portal
 - Purpose: Parent and guardian access to approved school information and learner-related views.
 - Owner: Product domain lead
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Identity and Access, Academic Operations, Communication
 - Notes: Parent access must be narrowly scoped.
@@ -144,7 +144,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### Feature Flags
 - Purpose: Controlled rollout, experimentation, and tenant-safe release management.
 - Owner: Platform
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: High
 - Dependencies: Identity and Access, Administration
 - Notes: Feature flags must not override security or tenancy rules.
@@ -152,7 +152,7 @@ Maintain a shared inventory of platform modules so contributors can understand o
 ### White-Label Presentation
 - Purpose: Approved branding, theme, and tenant presentation controls.
 - Owner: Platform / Product
-- Status: `[TBD]`
+- Status: Planned
 - Tenant sensitivity: Medium
 - Dependencies: Tenant Management, Administration
 - Notes: Must not become a custom code path per tenant.

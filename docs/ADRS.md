@@ -46,6 +46,10 @@ Record major architecture and platform decisions in a durable, reviewable format
 | ADR-003 | 2026-06-15 | Modular Feature System | Approved |
 | ADR-004 | 2026-06-15 | White-Label Strategy | Approved |
 | ADR-005 | 2026-06-15 | Documentation-First Development | Approved |
+| ADR-006 | 2026-06-15 | Single Neon PostgreSQL Database | Approved |
+| ADR-007 | 2026-06-15 | Session Authentication and Admin-Created Users | Approved |
+| ADR-008 | 2026-06-15 | Final Role Matrix | Approved |
+| ADR-009 | 2026-06-15 | Final Attendance and Results Rules | Approved |
 
 ## ADR-001: Multi-tenant Architecture
 - ADR Number: ADR-001
@@ -159,6 +163,96 @@ Record major architecture and platform decisions in a durable, reviewable format
   - `PROJECT_CONTEXT.md`
   - `ARCHITECTURE.md`
 - Notes: If documentation and implementation diverge, the documentation must be updated or the implementation must be corrected.
+
+## ADR-006: Single Neon PostgreSQL Database
+- ADR Number: ADR-006
+- Date: 2026-06-15
+- Status: Approved
+- Decision: `School OS` will use a single Neon PostgreSQL database with shared tables and `school_id` tenant isolation.
+- Context: The platform must remain operationally simple while preserving hard school boundaries.
+- Alternatives Considered:
+  - Separate database per school
+  - Schema-per-tenant architecture
+  - Shared database without explicit tenant columns
+- Reasoning: A single shared database keeps the MVP simple and supportable while `school_id`-scoped records preserve isolation when enforced consistently.
+- Consequences:
+  - Every tenant-owned table must include `school_id`.
+  - Every tenant-scoped query must filter by `school_id`.
+  - Tenant isolation must be verified in review and testing.
+  - Shared tables cannot be used as a shortcut to bypass boundary checks.
+- Related Docs:
+  - `ARCHITECTURE.md`
+  - `MULTI_TENANCY.md`
+  - `SECURITY_REQUIREMENTS.md`
+  - `MVP_SCOPE.md`
+- Notes: This decision is foundational for the first implementation phase.
+
+## ADR-007: Session Authentication and Admin-Created Users
+- ADR Number: ADR-007
+- Date: 2026-06-15
+- Status: Approved
+- Decision: The platform will use server-managed session authentication, and user accounts will be created by administrators only in the MVP.
+- Context: The onboarding and identity model must be controlled, auditable, and safe for school tenants.
+- Alternatives Considered:
+  - Token-only authentication with self-service registration
+  - Passwordless public sign-up
+  - Mixed self-service and admin-created accounts
+- Reasoning: Session-based authentication is straightforward for a React web app, and admin-created users keep tenant onboarding explicit and auditable.
+- Consequences:
+  - Self-service sign-up is not part of the MVP.
+  - Account provisioning is an admin workflow.
+  - Session revocation and support tooling must be designed from the start.
+  - Authorization logic must assume a trusted server-managed session context.
+- Related Docs:
+  - `SECURITY_REQUIREMENTS.md`
+  - `PRODUCT_REQUIREMENTS.md`
+  - `MULTI_TENANCY.md`
+  - `MVP_SCOPE.md`
+- Notes: This decision supports both tenant safety and supportability.
+
+## ADR-008: Final Role Matrix
+- ADR Number: ADR-008
+- Date: 2026-06-15
+- Status: Approved
+- Decision: The MVP authorization model will use a fixed role matrix consisting of School Administrator, Teacher, Learner, Parent or Guardian, Finance Officer, and Platform Operator.
+- Context: The platform needs a stable set of user roles that map cleanly to school operations and tenant administration.
+- Alternatives Considered:
+  - Free-form permissions
+  - Highly customizable tenant-defined roles
+  - A much larger default role catalog
+- Reasoning: A fixed matrix reduces permission drift, keeps the UI understandable, and makes authorization reviewable.
+- Consequences:
+  - New roles require explicit review before introduction.
+  - UI and API authorization must match the documented role matrix.
+  - Platform Operator access must remain tightly scoped and auditable.
+  - Tenant admins can assign only the approved roles.
+- Related Docs:
+  - `PRODUCT_REQUIREMENTS.md`
+  - `MODULE_CATALOG.md`
+  - `SECURITY_REQUIREMENTS.md`
+- Notes: The role matrix is a product and security baseline, not a cosmetic UI choice.
+
+## ADR-009: Final Attendance and Results Rules
+- ADR Number: ADR-009
+- Date: 2026-06-15
+- Status: Approved
+- Decision: Attendance and results workflows will use the finalized MVP rules in the product requirements document.
+- Context: Core academic workflows must have explicit behavior before implementation begins.
+- Alternatives Considered:
+  - Free-form attendance statuses
+  - Teacher-only result publishing
+  - Fully configurable school-defined result and attendance schemes
+- Reasoning: Fixed baseline rules reduce implementation ambiguity and keep the MVP coherent across tenants.
+- Consequences:
+  - Attendance uses the states present, absent, late, and excused.
+  - Results are term-based and published only after authorized review.
+  - Parent visibility is limited to approved learner-linked information.
+  - Any future flexibility must be introduced through approved changes, not ad hoc code paths.
+- Related Docs:
+  - `PRODUCT_REQUIREMENTS.md`
+  - `MVP_SCOPE.md`
+  - `MODULE_CATALOG.md`
+- Notes: These rules are intentionally simple for the first release.
 
 ## Review Requirements
 - New ADRs require review from architecture and affected domain owners.

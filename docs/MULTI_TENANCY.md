@@ -25,6 +25,8 @@ Define how tenant isolation, tenant context, and shared platform operations must
 - Each request, job, and user action must resolve to an explicit tenant context when tenant-scoped.
 - Shared services must not weaken tenant boundaries.
 - Tenant context must not be inferred ambiguously.
+- `school_id` is the tenant boundary and must be present on every tenant-owned row in shared tables.
+- Tenant context must be resolved from the authenticated session on the server, never from UI-only selection.
 - Cross-tenant reporting or administration requires explicit approval and safe aggregation rules.
 - White-label presentation must not alter tenant identity, tenant boundaries, or administrative accountability.
 
@@ -35,11 +37,11 @@ Define how tenant isolation, tenant context, and shared platform operations must
 - Bad: a shared queue processes tenant data without any tenant identity.
 
 ## Tenant Model
-- Primary tenancy model: `[TBD]`
-- Tenant identification source of truth: `[TBD]`
-- Tenant provisioning flow: `[TBD]`
-- Tenant lifecycle states: `[TBD]`
-- White-label policy linkage: `[TBD]`
+- Primary tenancy model: single shared Neon PostgreSQL database with shared tables and `school_id` tenant isolation
+- Tenant identification source of truth: authenticated session context containing `school_id`
+- Tenant provisioning flow: admin-created invitation flow
+- Tenant lifecycle states: invited, active, suspended, closed
+- White-label policy linkage: branding only; never identity, authorization, or data access
 
 ## Decision Record
 - Decision: Tenant context must be explicit and verified wherever tenant-scoped data is used.
@@ -50,6 +52,7 @@ Define how tenant isolation, tenant context, and shared platform operations must
 
 ## Isolation Requirements
 - No data fetch, mutation, or export may cross tenant boundaries without explicit authorization and review.
+- Shared tables must be filtered by `school_id` on every tenant-scoped access path.
 - Background jobs must carry tenant context where applicable.
 - Caches, queues, search indexes, file storage, and observability tools must be tenant-safe.
 - Shared operational tooling must not expose tenant data outside authorized support roles.
@@ -95,6 +98,4 @@ Define how tenant isolation, tenant context, and shared platform operations must
 - Any suspected leak must be treated as a severity issue.
 
 ## Open Decisions
-- Isolation pattern choice: `[TBD]`
-- Whether any shared data domain is permitted: `[TBD]`
 - Cross-tenant reporting policy: `[TBD]`
