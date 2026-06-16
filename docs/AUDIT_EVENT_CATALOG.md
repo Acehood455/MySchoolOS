@@ -53,6 +53,19 @@ Define the canonical set of audit events for School OS so security, support, com
 | privilege.escalated | A user gains a more privileged role or access. | School Admin, Super Admin | User access | Critical | Yes |
 | privilege.attempted | An unauthorized privilege change is attempted. | User, admin, attacker | User access | Critical | Yes |
 
+## User Management
+
+| Event Name | Description | Actor | Resource | Severity | Must Log |
+| --- | --- | --- | --- | --- | --- |
+| user.invited | An invitation is issued for a new account. | School Admin, Super Admin | User | High | Yes |
+| user.created | A user account is created. | School Admin, Super Admin | User | High | Yes |
+| user.activated | A user accepts an invitation or is activated. | User, School Admin, Super Admin | User | High | Yes |
+| user.updated | User profile or metadata changes. | User, School Admin, Super Admin | User | Medium | Yes |
+| user.suspended | User access is suspended. | School Admin, Super Admin | User | High | Yes |
+| user.deactivated | User access is removed. | School Admin, Super Admin | User | High | Yes |
+| user.password_reset_requested | A password reset is requested. | User, School Admin, Super Admin | User | Medium | Yes |
+| user.password_reset_completed | A password reset completes. | User, School Admin, Super Admin | User | High | Yes |
+
 ## Tenant Management
 
 | Event Name | Description | Actor | Resource | Severity | Must Log |
@@ -65,6 +78,9 @@ Define the canonical set of audit events for School OS so security, support, com
 | school.archived | A school is moved to historical storage state. | Super Admin, School Admin | School | Medium | Yes |
 | school.deleted_requested | A deletion request is made. | School Admin, Super Admin | School | High | Yes |
 | school.domain.added | A domain mapping is added. | Super Admin, School Admin | SchoolDomain | High | Yes |
+| school.domain.verified | A domain mapping is verified for use. | Super Admin, School Admin | SchoolDomain | High | Yes |
+| school.domain.verification_failed | A domain mapping verification attempt fails. | Super Admin, School Admin | SchoolDomain | Medium | Yes |
+| school.domain.remapped | A domain is moved from one mapping to another. | Super Admin, School Admin | SchoolDomain | High | Yes |
 | school.domain.removed | A domain mapping is removed. | Super Admin, School Admin | SchoolDomain | High | Yes |
 | school.theme.updated | Branding settings are changed. | School Admin | SchoolTheme | Medium | Yes |
 | school.settings.updated | Operational settings are changed. | School Admin | SchoolSettings | Medium | Yes |
@@ -167,7 +183,7 @@ Define the canonical set of audit events for School OS so security, support, com
 | report.exported | A report or data export is generated. | School Admin, Super Admin, authorized staff | Report/export | Critical | Yes |
 | report.filtered | A report query is narrowed or scoped. | User | Report | Low | No |
 | report.shared | A report is shared through an approved workflow. | School Admin, authorized staff | Report | High | Yes |
-| analytics.aggregate_viewed | Non-identifying aggregate reporting is viewed. | Super Admin, platform operator | Aggregate metrics | Medium | Yes |
+| analytics.aggregate_viewed | Non-identifying aggregate reporting is viewed. | Super Admin, authorized support | Aggregate metrics | Medium | Yes |
 
 ## Announcements
 
@@ -184,15 +200,15 @@ Define the canonical set of audit events for School OS so security, support, com
 
 | Event Name | Description | Actor | Resource | Severity | Must Log |
 | --- | --- | --- | --- | --- | --- |
-| system.feature_flag_changed | A feature flag changes state or audience. | Super Admin, platform operator | Feature flag | High | Yes |
+| system.feature_flag_changed | A feature flag changes state or audience. | Super Admin, authorized support | Feature flag | High | Yes |
 | system.support_access_granted | Temporary support access is approved. | Super Admin, Security, authorized support | Support scope | Critical | Yes |
 | system.support_access_revoked | Temporary support access ends. | Super Admin, Security, authorized support | Support scope | High | Yes |
-| system.config_changed | Platform configuration changes. | Super Admin, platform operator | Platform config | High | Yes |
-| system.integration_connected | An approved integration is enabled. | Super Admin, platform operator | Integration | High | Yes |
-| system.integration_disconnected | An integration is disabled. | Super Admin, platform operator | Integration | High | Yes |
+| system.config_changed | Platform configuration changes. | Super Admin, authorized support | Platform config | High | Yes |
+| system.integration_connected | An approved integration is enabled. | Super Admin, authorized support | Integration | High | Yes |
+| system.integration_disconnected | An integration is disabled. | Super Admin, authorized support | Integration | High | Yes |
 | system.backup_verified | Backup integrity or restore readiness is checked. | System, operator | Backup/restore | Medium | Yes |
-| system.restore_started | A restore process begins. | Super Admin, platform operator | Backup/restore | Critical | Yes |
-| system.restore_completed | A restore process completes. | Super Admin, platform operator | Backup/restore | Critical | Yes |
+| system.restore_started | A restore process begins. | Super Admin, authorized support | Backup/restore | Critical | Yes |
+| system.restore_completed | A restore process completes. | Super Admin, authorized support | Backup/restore | Critical | Yes |
 
 ## Sensitive Events
 The following event families are always sensitive and should be treated as at least High severity:

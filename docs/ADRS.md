@@ -48,9 +48,10 @@ Record major architecture and platform decisions in a durable, reviewable format
 | ADR-005 | 2026-06-15 | Documentation-First Development | Approved |
 | ADR-006 | 2026-06-15 | Single Neon PostgreSQL Database | Approved |
 | ADR-007 | 2026-06-15 | Session Authentication and Admin-Created Users | Approved |
-| ADR-008 | 2026-06-15 | Final Role Matrix | Approved |
+| ADR-008 | 2026-06-15 | Final Role Matrix | Superseded |
 | ADR-009 | 2026-06-15 | Final Attendance and Results Rules | Approved |
 | ADR-010 | 2026-06-16 | Final Implementation Plan | Approved |
+| ADR-011 | 2026-06-16 | Canonical MVP Role Matrix | Approved |
 
 ## ADR-001: Multi-tenant Architecture
 - ADR Number: ADR-001
@@ -214,7 +215,7 @@ Record major architecture and platform decisions in a durable, reviewable format
 ## ADR-008: Final Role Matrix
 - ADR Number: ADR-008
 - Date: 2026-06-15
-- Status: Approved
+- Status: Superseded
 - Decision: The MVP authorization model will use a fixed role matrix consisting of School Administrator, Teacher, Learner, Parent or Guardian, Finance Officer, and Platform Operator.
 - Context: The platform needs a stable set of user roles that map cleanly to school operations and tenant administration.
 - Alternatives Considered:
@@ -232,6 +233,7 @@ Record major architecture and platform decisions in a durable, reviewable format
   - `MODULE_CATALOG.md`
   - `SECURITY_REQUIREMENTS.md`
 - Notes: The role matrix is a product and security baseline, not a cosmetic UI choice.
+- Notes: This ADR is superseded by ADR-011 and `ROLE_MATRIX.md`; its role names are retained only for historical traceability.
 
 ## ADR-009: Final Attendance and Results Rules
 - ADR Number: ADR-009
@@ -277,6 +279,31 @@ Record major architecture and platform decisions in a durable, reviewable format
   - `MVP_SCOPE.md`
   - `PRODUCT_REQUIREMENTS.md`
 - Notes: Future delivery changes must be reflected here and in the implementation plan together.
+
+## ADR-011: Canonical MVP Role Matrix
+- ADR Number: ADR-011
+- Date: 2026-06-16
+- Status: Approved
+- Decision: The canonical MVP role matrix is Super Admin, School Admin, Teacher, Parent, and Student.
+- Context: The documentation set contained multiple role vocabularies, which created ambiguity for ownership, lifecycle, audit, and product planning.
+- Alternatives Considered:
+  - Keeping role-specific variations per document
+  - Treating finance and support responsibilities as separate MVP roles
+  - Allowing legacy role names to remain as primary terminology
+- Reasoning: A small canonical role set reduces ambiguity and makes it easier for AI contributors and humans to apply permissions consistently.
+- Consequences:
+  - `ROLE_MATRIX.md` becomes the role source of truth.
+  - Legacy terms such as Learner, Parent or Guardian, Finance Officer, and Platform Operator must be normalized or clearly labeled as aliases/capabilities.
+  - Product, MVP, ownership, database, and audit docs must align to the canonical role names.
+  - Any future role expansion requires a new approved decision.
+- Related Docs:
+  - `ROLE_MATRIX.md`
+  - `PRODUCT_REQUIREMENTS.md`
+  - `MVP_SCOPE.md`
+  - `DATA_OWNERSHIP.md`
+  - `DATABASE_DESIGN.md`
+  - `AUDIT_EVENT_CATALOG.md`
+- Notes: This ADR supersedes the role-name assumptions captured in ADR-008 for current documentation purposes.
 
 ## Review Requirements
 - New ADRs require review from architecture and affected domain owners.

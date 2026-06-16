@@ -30,6 +30,7 @@ Define ownership, access, and tenant isolation rules for the major business enti
 - Platform-level actors may administer tenants, but they do not own tenant data.
 - Sensitive changes to identity, roles, results, attendance, and school settings must always be auditable.
 - Default access should be least-privilege and role-scoped.
+- Relationship records that define tenant membership or instructional assignment are first-class tenant-owned entities, not implementation details.
 
 ## Ownership Tables
 
@@ -93,6 +94,18 @@ Define ownership, access, and tenant isolation rules for the major business enti
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Announcements | School-wide or audience-scoped communication notices. | School Admin; authorized staff | Tenant-owned | Super Admin, School Admin, Teacher, Parent, Student according to audience scope | School Admin, authorized staff | School Admin, authorized staff before publish | School Admin, restricted archive or delete before publish | Create, edit, publish, unpublish, archive, delete attempt |
 
+### Relationship and Policy Records
+
+| Entity | Purpose | Owner | Tenant Scope | Can View | Can Create | Can Edit | Can Delete | Audit Requirements |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| RoleAssignment | Links a user to a canonical role within a school. | School Admin; Super Admin for platform-controlled assignments | Tenant-owned | Super Admin, School Admin | Super Admin, School Admin | Super Admin, School Admin | Super Admin, School Admin | Assignment, revocation, elevation, emergency changes |
+| StudentEnrollment | Records a student's enrollment in a school, class, year, or term context. | School Admin | Tenant-owned | Super Admin, School Admin, Teacher in scope | School Admin | School Admin | School Admin, restricted archival only | Enrollment, update, transfer, withdrawal, archive |
+| StudentGuardianLink | Links a parent to a student. | School Admin | Tenant-owned | Super Admin, School Admin, Parent in linked context | School Admin | School Admin | School Admin | Link, unlink, permission change |
+| TeacherClassAssignment | Links a teacher to a class. | School Admin | Tenant-owned | Super Admin, School Admin, Teacher in scope | School Admin | School Admin | School Admin | Assignment, reassignment, removal |
+| TeacherSubjectAssignment | Links a teacher to a subject. | School Admin | Tenant-owned | Super Admin, School Admin, Teacher in scope | School Admin | School Admin | School Admin | Assignment, reassignment, removal |
+| DomainVerification | Tracks verification status for a school domain or custom domain mapping. | Super Admin; School Admin where allowed | Tenant-owned | Super Admin, School Admin | Super Admin, School Admin | Super Admin, School Admin | Super Admin, School Admin | Verification, failure, remap, deactivation |
+| GradingPolicy | Stores CA1/CA2/Exam weighting and grade threshold rules for the school. | School Admin | Tenant-owned | Super Admin, School Admin, Teacher in scope | School Admin | School Admin | School Admin, restricted archival only | Policy create, update, publish, archive |
+
 ## Entity Guidance
 
 ### School
@@ -135,6 +148,21 @@ Define ownership, access, and tenant isolation rules for the major business enti
 - Access model: Access is role-sensitive and relationship-sensitive.
 - Tenant isolation requirements: Relationship links such as parent-to-student or teacher-to-class must never cross school boundaries.
 
+### RoleAssignment, StudentEnrollment, StudentGuardianLink, TeacherClassAssignment, TeacherSubjectAssignment
+- Ownership model: These records are tenant-owned relationship entities that express who belongs to the school and what instructional access exists.
+- Access model: School Admins manage them; Super Admins may intervene for platform support or recovery.
+- Tenant isolation requirements: The relationship itself is a tenant boundary and must never reference a record from a different school.
+
+### DomainVerification
+- Ownership model: Verification records belong to the school and describe which hostnames are approved to resolve that school.
+- Access model: School Admins and Super Admins may manage the lifecycle.
+- Tenant isolation requirements: A host must never be verified for more than one active school at a time.
+
+### GradingPolicy
+- Ownership model: Grading policy belongs to the school and defines result weighting and grading thresholds.
+- Access model: School Admins manage policy within approved bounds.
+- Tenant isolation requirements: Policy can be shared in concept, but each school's grading policy must remain tenant-scoped.
+
 ### AcademicYear, Term, Class, Subject
 - Ownership model: Academic structure is school-owned.
 - Access model: Academic admins and assigned staff may manage structure within their scope.
@@ -174,3 +202,4 @@ Define ownership, access, and tenant isolation rules for the major business enti
 - When adding global platform entities, document why they are not tenant-owned.
 - Keep reporting aggregates non-identifying unless explicitly approved otherwise.
 - Preserve compatibility with school subdomains and mapped custom domains for tenant resolution.
+- Model any new access, enrollment, or assignment behavior as an explicit entity instead of burying it in application logic.

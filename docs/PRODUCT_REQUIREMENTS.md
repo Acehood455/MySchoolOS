@@ -28,34 +28,33 @@ Define the product-level requirements for `School OS` so that all contributors b
 - Keep the product understandable enough that a new AI contributor can infer the intended behavior from the docs alone.
 
 ## Personas
-- School Administrator
+- School Admin
 - Teacher
-- Learner
-- Parent or Guardian
-- Finance Officer
-- Platform Operator
+- Student
+- Parent
+- Super Admin
 
 ## Use Cases
-- An administrator configures a new tenant and assigns staff roles safely.
-- A teacher records attendance and communicates with learners or parents within role boundaries.
-- A learner accesses assigned learning activities without seeing other tenants.
-- A platform operator reviews operational health without exposing tenant-sensitive data.
+- A school admin configures a new tenant and assigns staff roles safely.
+- A teacher records attendance and communicates with students or parents within role boundaries.
+- A student accesses assigned learning activities without seeing other tenants.
+- A Super Admin reviews operational health without exposing tenant-sensitive data.
 
 ## Core Requirement Areas
 ### Identity and Access
 - Users must have role-appropriate access.
 - Authentication and session handling must be secure by default and session-based.
 - Administrative actions must be traceable.
-- Users are created by tenant administrators or platform operators only; self-service account creation is not part of MVP.
-- The role matrix is fixed for MVP and includes School Administrator, Teacher, Learner, Parent or Guardian, Finance Officer, and Platform Operator.
+- Users are created by school admins or Super Admins only; self-service account creation is not part of MVP.
+- The role matrix is fixed for MVP and is defined in `ROLE_MATRIX.md`.
 
 #### Role Matrix
-- School Administrator: configures the school, invites staff, and manages tenant-level operational settings.
+- `ROLE_MATRIX.md` is the canonical role reference for MVP.
+- School Admin: configures the school, invites staff, and manages tenant-level operational settings.
 - Teacher: records attendance, manages class-level learning activity, and prepares results within assigned scope.
-- Learner: accesses assigned learning activities and views permitted personal information.
-- Parent or Guardian: views approved child-related information and school communication.
-- Finance Officer: manages tenant finance workflows and reports within approved scope.
-- Platform Operator: manages tenant lifecycle and support operations without unrestricted cross-tenant data exposure.
+- Student: accesses assigned learning activities and views permitted personal information.
+- Parent: views approved child-related information and school communication.
+- Super Admin: manages platform-wide tenant lifecycle and support operations with explicit authorization.
 
 ### Academic Operations
 - Schools must be able to manage academic workflows relevant to their grade structure, timetable, and calendar.
@@ -71,7 +70,7 @@ Define the product-level requirements for `School OS` so that all contributors b
 - Schools must be able to capture, manage, and publish learner results according to approved academic policy.
 - Result access must respect role boundaries and publication rules.
 - Results are term-based in MVP.
-- Teachers prepare draft results, and an authorized school-level role publishes them after review.
+- Teachers prepare draft results, and an authorized School Admin publishes them after review.
 - Published results are visible only according to role and learner relationship rules.
 
 ### Communication
@@ -82,19 +81,20 @@ Define the product-level requirements for `School OS` so that all contributors b
 - The platform must support operational visibility for attendance, schedules, records, and school administration tasks.
 
 ### Learning Experience
-- Learners must have a simple, accessible experience for discovering and completing learning activities.
+- Students must have a simple, accessible experience for discovering and completing learning activities.
 
 ### Administration
 - Tenant admins must be able to configure their school within approved platform boundaries.
-- The platform operator must be able to manage tenants centrally without custom code per tenant.
+- Super Admins must be able to manage tenants centrally without custom code per tenant.
 - Tenant users are provisioned through admin-created invitations, not self-registration.
 
 ### Parent Portal
-- Parents and guardians must be able to view approved school information relevant to their child or linked learners.
+- Parents must be able to view approved school information relevant to their child or linked students.
 - Parent-facing access must be limited to explicit permissions and tenant context.
 
 ### Finance
 - Schools must be able to manage approved finance workflows relevant to operations and reporting.
+- Finance workflows are handled through existing roles and policy; no standalone finance role is part of MVP.
 - Financial data must be protected with stronger access controls and auditability.
 
 ### Analytics

@@ -31,7 +31,7 @@ The MVP is the smallest end-to-end product that allows a real school tenant to o
 
 ## In Scope
 - Tenant onboarding and tenant-aware access control
-- Role-based access for School Administrator, Teacher, Learner, Parent or Guardian, Finance Officer, and Platform Operator
+- Role-based access for Super Admin, School Admin, Teacher, Parent, and Student
 - Core school administration workflows: tenant setup, school profile, staff invitation, and role assignment
 - Core learning workflows: assigned learning activity access and completion
 - Core attendance workflows: record, review, and report attendance
