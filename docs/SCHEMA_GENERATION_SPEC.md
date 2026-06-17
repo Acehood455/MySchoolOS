@@ -69,11 +69,13 @@ The following entities are global and must not be treated as tenant-owned:
 - Role
 - Platform-owned User records for Super Admin accounts
 
+Platform-owned Super Admin users are a separate ownership scope from school-owned users. Platform users do not belong to a school and must not be assigned `school_id`.
+
 ### Cross-Tenant Restrictions
 - No cross-tenant foreign keys.
 - No cross-tenant reads, writes, exports, or background operations without explicit platform authorization.
 - No tenant-owned record may reference a record from another school.
-- No schema pattern may make one school’s data implicitly visible to another school.
+- No schema pattern may make one school's data implicitly visible to another school.
 
 ## Relationship Rules
 

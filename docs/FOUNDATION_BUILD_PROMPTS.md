@@ -32,6 +32,8 @@ Foundation work must always:
 - Prohibit unrelated changes
 - Respect tenant isolation, auditability, and role boundaries
 - Stop if a requested change conflicts with governing documentation
+- If any required document is missing, unreadable, or inaccessible, the agent must stop work and report the issue before making changes.
+- Agents must not assume ownership of files that may currently be under active modification by another contributor. Potential conflicts must be reported before changes are proposed.
 
 ## Build Prompt Template
 

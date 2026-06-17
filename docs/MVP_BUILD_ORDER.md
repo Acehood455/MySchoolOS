@@ -45,6 +45,7 @@ This document is the authoritative build sequence for MVP delivery. It translate
 ## Phase 2: School Core
 
 ### Goals
+- School Core includes school setup, configuration, branding, settings, and administrative management surfaces only.
 - Build the school-facing operational core that sits above the foundation.
 - Enable the basic tenant administration workflows used to configure a school.
 - Prepare the platform for people, academic structure, and later workflows.
@@ -59,9 +60,18 @@ This document is the authoritative build sequence for MVP delivery. It translate
 - School branding and operational settings workflows
 - Core school administration surfaces
 
+### Explicit Exclusions
+- Students
+- Teachers
+- Parents
+- Attendance
+- Assessments
+- Results
+
 ### Completion Criteria
 - School admins can configure their school within tenant-safe boundaries.
 - Core school settings are editable only by authorized roles.
+- No excluded people or academic modules are introduced in Phase 2.
 - No academic workflow is introduced yet.
 
 ## Phase 3: People
