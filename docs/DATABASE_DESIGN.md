@@ -14,6 +14,7 @@ Describe the conceptual database structure of School OS so architecture, product
 - Platform-wide entities must be clearly labeled and never confused with tenant-owned records.
 - Relationship modeling must preserve tenant isolation.
 - Delete behavior should default to archive or soft delete when records are operationally meaningful.
+- Verified custom domains are resolved before subdomains, and duplicate host mappings are prohibited.
 
 ## Domain Map
 - School Domain
@@ -33,15 +34,15 @@ Describe the conceptual database structure of School OS so architecture, product
 - Purpose: Root tenant record and business boundary.
 - Relationships: Has one or more domains, settings, theme records, users, students, teachers, parents, classes, years, terms, subjects, assessments, attendance records, results, report cards, and announcements.
 - Tenant ownership: Tenant-owned root entity.
-- Lifecycle notes: School records move through onboarding, active use, suspension, and closure.
-- Deletion behavior: Prefer archival or closure over hard delete.
+- Lifecycle notes: School records move through pending onboarding, active use, suspension, and archival.
+- Deletion behavior: Prefer archival over hard delete.
 - `school_id`: Owns the top-level boundary and is the source of all tenant-scoped filtering.
 
 #### SchoolDomain
 - Purpose: Stores the school's access domain or mapped custom domain.
 - Relationships: Belongs to one school.
 - Tenant ownership: Tenant-owned.
-- Lifecycle notes: Can be added, verified, remapped, deactivated, or retired.
+- Lifecycle notes: Custom domains must be verified before use; verified custom domains resolve before subdomains; conflicts are rejected and audited.
 - Deletion behavior: Remove only when the mapping is no longer active.
 - `school_id`: Required.
 
@@ -193,7 +194,7 @@ Describe the conceptual database structure of School OS so architecture, product
 - Purpose: Represents CA1, CA2, Exam, or another approved evaluative activity.
 - Relationships: Belongs to a term, class, subject, and teacher owner; produces many assessment results.
 - Tenant ownership: Tenant-owned.
-- Lifecycle notes: Draft, scheduled, open, locked, reviewed, published, archived.
+- Lifecycle notes: Draft, open, closed, archived.
 - Deletion behavior: Prefer archive; do not delete after results exist.
 - `school_id`: Required.
 
@@ -201,7 +202,7 @@ Describe the conceptual database structure of School OS so architecture, product
 - Purpose: Stores a student's score for a specific assessment.
 - Relationships: Belongs to one assessment and one student.
 - Tenant ownership: Tenant-owned.
-- Lifecycle notes: Draft, submitted, reviewed, corrected, published, archived.
+- Lifecycle notes: Draft, submitted, reviewed, published, archived.
 - Deletion behavior: Prefer correction or archival; avoid hard delete if published.
 - `school_id`: Required.
 
@@ -245,7 +246,7 @@ Describe the conceptual database structure of School OS so architecture, product
 - Purpose: Records verification status for a school domain or mapped custom domain.
 - Relationships: Belongs to one school and one host mapping.
 - Tenant ownership: Tenant-owned.
-- Lifecycle notes: Pending, verified, remapped, revoked, archived.
+- Lifecycle notes: Pending, verified, remapped, revoked, archived. Custom domains require verification before participating in tenant resolution.
 - Deletion behavior: Prefer revocation or archival.
 - `school_id`: Required.
 
@@ -372,6 +373,8 @@ ReportCard
 ### DomainVerification
 - A verified host must resolve to exactly one school.
 - No host may remain ambiguous or point to multiple active tenants.
+- Verified custom domains are resolved before subdomains.
+- Conflicting host mappings must be rejected and audited before any tenant data access occurs.
 
 ### GradingPolicy
 - A school may version grading policies over time.

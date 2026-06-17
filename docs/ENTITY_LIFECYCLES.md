@@ -18,32 +18,29 @@ Define the lifecycle states, transitions, and audit expectations for the major e
 ## School
 
 ### State Diagram
-Proposed -> Active -> Suspended -> Closed -> Archived
+Pending -> Active -> Suspended -> Archived
 
 ### State Descriptions
-- Proposed: School record exists but onboarding is incomplete.
+- Pending: School record exists but onboarding is incomplete.
 - Active: School is fully operational.
 - Suspended: Access is restricted due to admin, security, or policy action.
-- Closed: School is no longer active but historical records are preserved.
 - Archived: School is retained for history and compliance with minimal operational access.
 
 ### Valid Transitions
-- Proposed -> Active
+- Pending -> Active
 - Active -> Suspended
 - Suspended -> Active
-- Active -> Closed
-- Suspended -> Closed
-- Closed -> Archived
+- Active -> Archived
+- Suspended -> Archived
 
 ### Invalid Transitions
-- Active -> Proposed
-- Closed -> Active without a reactivation review
+- Active -> Pending
 - Archived -> Active
 
 ### Triggering Actions
 - Onboarding completion activates the school.
 - Compliance, safety, or payment issues may suspend the school.
-- Formal offboarding closes the school.
+- Administrative review restores a suspended school to active status.
 - Long-term retention moves it to archived status.
 
 ### Audit Requirements
@@ -51,7 +48,6 @@ Proposed -> Active -> Suspended -> Closed -> Archived
 - School activated
 - School suspended
 - School reactivated
-- School closed
 - School archived
 
 ## Student
@@ -294,68 +290,58 @@ Draft -> Recorded -> Corrected -> Locked -> Archived
 ## Assessment
 
 ### State Diagram
-Draft -> Scheduled -> Open -> Locked -> Reviewed -> Published -> Archived
+Draft -> Open -> Closed -> Archived
 
 ### State Descriptions
 - Draft: Assessment is being prepared.
-- Scheduled: Assessment has an intended date or term placement.
 - Open: Assessment is active for grading or entry.
-- Locked: Further casual edits are blocked.
-- Reviewed: Assessment has been checked by an authorized reviewer.
-- Published: Results are visible according to role and publication rules.
+- Closed: Assessment is finalized and no longer accepts ordinary edits.
 - Archived: Assessment is preserved for history.
 
 ### Valid Transitions
-- Draft -> Scheduled
-- Scheduled -> Open
-- Open -> Locked
-- Locked -> Reviewed
-- Reviewed -> Published
-- Published -> Archived
+- Draft -> Open
+- Open -> Closed
+- Closed -> Archived
 
 ### Invalid Transitions
-- Published -> Open
+- Closed -> Open
 - Archived -> Open
-- Reviewed -> Draft without a correction workflow
+- Draft -> Closed
 
 ### Triggering Actions
-- Teacher setup moves the assessment into scheduled state.
-- Exam day or grading window opens it.
-- Submission cutoff locks it.
-- Authorized review marks it reviewed and published.
+- Teacher setup moves the assessment into open state.
+- Submission cutoff closes it.
+- Retention or end-of-cycle processing archives it.
 
 ### Audit Requirements
 - Assessment created
 - Assessment updated
-- Assessment locked
-- Assessment reviewed
-- Assessment published
+- Assessment opened
+- Assessment closed
 - Assessment archived
 
 ## AssessmentResult
 
 ### State Diagram
-Draft -> Submitted -> Reviewed -> Corrected -> Published -> Archived
+Draft -> Submitted -> Reviewed -> Published -> Archived
 
 ### State Descriptions
 - Draft: Score entry is not final.
 - Submitted: Result has been entered for review.
 - Reviewed: Result has been checked and accepted or flagged.
-- Corrected: A reviewer or authorized staff member changes the score or metadata.
 - Published: Result is visible according to rules.
 - Archived: Result is retained as historical academic data.
 
 ### Valid Transitions
 - Draft -> Submitted
 - Submitted -> Reviewed
-- Reviewed -> Corrected
-- Corrected -> Reviewed
 - Reviewed -> Published
 - Published -> Archived
 
 ### Invalid Transitions
 - Published -> Submitted
 - Archived -> Reviewed
+- Archived -> Submitted
 
 ### Triggering Actions
 - Teacher enters the score to submit it.
@@ -365,7 +351,6 @@ Draft -> Submitted -> Reviewed -> Corrected -> Published -> Archived
 ### Audit Requirements
 - Result submitted
 - Result reviewed
-- Result corrected
 - Result published
 - Result archived
 

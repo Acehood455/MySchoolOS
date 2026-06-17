@@ -74,12 +74,12 @@ Define the canonical set of audit events for School OS so security, support, com
 | school.updated | School metadata or policy settings are changed. | School Admin, Super Admin | School | High | Yes |
 | school.suspended | Tenant access is suspended. | Super Admin | School | Critical | Yes |
 | school.reactivated | Suspended tenant access is restored. | Super Admin | School | High | Yes |
-| school.closed | A school is formally closed. | Super Admin, School Admin | School | High | Yes |
 | school.archived | A school is moved to historical storage state. | Super Admin, School Admin | School | Medium | Yes |
 | school.deleted_requested | A deletion request is made. | School Admin, Super Admin | School | High | Yes |
 | school.domain.added | A domain mapping is added. | Super Admin, School Admin | SchoolDomain | High | Yes |
 | school.domain.verified | A domain mapping is verified for use. | Super Admin, School Admin | SchoolDomain | High | Yes |
 | school.domain.verification_failed | A domain mapping verification attempt fails. | Super Admin, School Admin | SchoolDomain | Medium | Yes |
+| school.domain.conflict_rejected | A domain mapping conflict is rejected because the host is already in use. | Super Admin, School Admin, system | SchoolDomain | High | Yes |
 | school.domain.remapped | A domain is moved from one mapping to another. | Super Admin, School Admin | SchoolDomain | High | Yes |
 | school.domain.removed | A domain mapping is removed. | Super Admin, School Admin | SchoolDomain | High | Yes |
 | school.theme.updated | Branding settings are changed. | School Admin | SchoolTheme | Medium | Yes |
@@ -156,9 +156,8 @@ Define the canonical set of audit events for School OS so security, support, com
 | --- | --- | --- | --- | --- | --- |
 | assessment.created | Assessment draft is created. | Teacher, School Admin | Assessment | High | Yes |
 | assessment.updated | Assessment metadata changes. | Teacher, School Admin | Assessment | High | Yes |
-| assessment.scheduled | Assessment is scheduled. | Teacher, School Admin | Assessment | High | Yes |
-| assessment.locked | Assessment is locked for grading. | Teacher, School Admin | Assessment | High | Yes |
-| assessment.reviewed | Assessment is reviewed. | Authorized reviewer | Assessment | High | Yes |
+| assessment.opened | Assessment becomes active for entry. | Teacher, School Admin | Assessment | High | Yes |
+| assessment.closed | Assessment is finalized. | Teacher, School Admin | Assessment | High | Yes |
 | assessment.archived | Assessment is archived. | School Admin | Assessment | Medium | Yes |
 
 ## Results
@@ -168,12 +167,19 @@ Define the canonical set of audit events for School OS so security, support, com
 | result.created | A result score is entered. | Teacher, School Admin | AssessmentResult | High | Yes |
 | result.updated | A result score or metadata is corrected. | Teacher, School Admin | AssessmentResult | High | Yes |
 | result.reviewed | A result is checked by an authorized reviewer. | Authorized reviewer | AssessmentResult | High | Yes |
-| result.rejected | A result is rejected during review. | Authorized reviewer | AssessmentResult | High | Yes |
 | result.published | Result becomes visible to authorized viewers. | School Admin, system on approval | AssessmentResult | Critical | Yes |
-| result.reissued | A corrected result is reissued. | School Admin, authorized staff | AssessmentResult | High | Yes |
 | report_card.generated | Report card is created from results. | System, School Admin | ReportCard | High | Yes |
 | report_card.reviewed | Report card is checked before release. | Authorized reviewer | ReportCard | High | Yes |
 | report_card.published | Report card is made visible to learners or parents. | School Admin, system on approval | ReportCard | Critical | Yes |
+
+## Grading Policy
+
+| Event Name | Description | Actor | Resource | Severity | Must Log |
+| --- | --- | --- | --- | --- | --- |
+| grading_policy.created | A grading policy is created for a school or reporting cycle. | School Admin | GradingPolicy | High | Yes |
+| grading_policy.updated | A grading policy is edited or versioned. | School Admin | GradingPolicy | High | Yes |
+| grading_policy.activated | A grading policy becomes the active policy for calculations. | School Admin | GradingPolicy | High | Yes |
+| grading_policy.archived | A grading policy is retired from active use. | School Admin | GradingPolicy | High | Yes |
 
 ## Reporting
 
@@ -213,11 +219,12 @@ Define the canonical set of audit events for School OS so security, support, com
 ## Sensitive Events
 The following event families are always sensitive and should be treated as at least High severity:
 - Role assignment or revocation
-- School creation, suspension, closure, or deletion requests
+- School creation, suspension, archival, or deletion requests
 - User deactivation, suspension, password reset, or privilege changes
 - Student transfer, withdrawal, or archival
 - Attendance unlocking or correction after lock
 - Assessment result review, publication, or reissue
+- Grading policy changes
 - Report exports
 - Support access grant or revocation
 - Integration changes
@@ -228,7 +235,7 @@ The following actions are high-risk and should trigger elevated review or alerts
 - Support access to tenant data
 - Result publication
 - Report export
-- School suspension or closure
+- School suspension or archival
 - Privilege escalation
 - Session revocation due to suspicious activity
 - Restore operations

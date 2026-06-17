@@ -27,7 +27,7 @@ Define how tenant isolation, tenant context, and shared platform operations must
 - Tenant context must not be inferred ambiguously.
 - `school_id` is the tenant boundary and must be present on every tenant-owned row in shared tables.
 - Tenant context must be resolved from the authenticated session on the server, never from UI-only selection.
-- School identity must first be resolved from a verified request host mapping, and that host must resolve to exactly one active school.
+- School identity must be resolved from host mapping before tenant-scoped access is allowed.
 - Cross-tenant reporting or administration requires explicit approval and safe aggregation rules.
 - White-label presentation must not alter tenant identity, tenant boundaries, or administrative accountability.
 
@@ -41,10 +41,12 @@ Define how tenant isolation, tenant context, and shared platform operations must
 - Primary tenancy model: single shared Neon PostgreSQL database with shared tables and `school_id` tenant isolation
 - Tenant identification source of truth: verified request host mapping plus authenticated session context containing `school_id`
 - Tenant provisioning flow: admin-created invitation flow
-- Tenant lifecycle states: invited, active, suspended, closed
+- Tenant lifecycle states: pending, active, suspended, archived
 - White-label policy linkage: branding only; never identity, authorization, or data access
-- Domain mapping rules: each active subdomain or mapped custom domain must be verified before use and bound to only one school at a time.
-- Resolution failure behavior: requests with no verified host match or a conflicting host match must be rejected before tenant data access.
+- Canonical host resolution order: verified custom domain lookup first, subdomain fallback second.
+- Domain mapping rules: custom domains require verification before use, and each active host must be bound to only one school at a time.
+- Resolution failure behavior: requests with no verified host match must return Tenant Not Found before tenant data access.
+- Conflict behavior: duplicate host mappings are prohibited, conflicting host mappings are rejected, and rejection must be audited.
 
 ## Decision Record
 - Decision: Tenant context must be explicit and verified wherever tenant-scoped data is used.
@@ -61,6 +63,7 @@ Define how tenant isolation, tenant context, and shared platform operations must
 - Shared operational tooling must not expose tenant data outside authorized support roles.
 - Tenant-aware permissions must be checked before data is read or exported.
 - School domain verification, remapping, and deactivation must be auditable because they change the path used to resolve tenant context.
+- Host resolution failures and conflict rejections must be auditable because they affect tenant access.
 
 ## Cross-Tenant Operations
 - Aggregated metrics are allowed only if they are intentionally non-identifying and reviewed for leakage risk.
