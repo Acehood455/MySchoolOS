@@ -31,6 +31,14 @@ The Foundation database model includes only the following entities:
 - Soft delete is preferred over hard delete for business records.
 - Archived or deactivated records should remain identifiable for history and compliance.
 
+## Index Guidance
+The following composite indexes are conceptual expectations for future schema generation:
+- `SchoolDomain(host, verification_status)` to support canonical host resolution and verification filtering.
+- `RoleAssignment(school_id, user_id, status)` to support tenant-scoped authorization checks.
+- `Session(school_id, user_id, expires_at)` to support active-session lookup and expiry enforcement.
+- `AuditLog(school_id, created_at)` to support tenant audit review and retention workflows.
+- `AuditLog(event_name, created_at)` to support incident triage and security reporting.
+
 ## Relationship Matrix
 
 | Relationship | Cardinality | Notes |
@@ -145,6 +153,7 @@ Stores verified hostnames used to resolve a school.
 - Index by `host`.
 - Index by `verification_status`.
 - Index by `status`.
+- Composite index on `host` and `verification_status` is expected for the active resolution path.
 
 #### Relationships
 - Many domains belong to one school.
@@ -370,6 +379,7 @@ Tracks authenticated access state for a user.
 - Index by `school_id`.
 - Index by `status`.
 - Index by `expires_at`.
+- Composite index on `school_id`, `user_id`, and `expires_at` is expected for session lookup and expiry enforcement.
 
 #### Relationships
 - One user to many sessions.
@@ -475,6 +485,7 @@ Links a user to a canonical role within a school.
 - Index by `user_id`.
 - Index by `role_id`.
 - Index by `status`.
+- Composite index on `school_id`, `user_id`, and `status` is expected for authorization checks.
 
 #### Relationships
 - Many role assignments belong to one user.
@@ -537,6 +548,8 @@ Immutable record of security-relevant, administrative, and tenant-sensitive even
 - Index by `event_name`.
 - Index by `actor_id`.
 - Index by `resource_type` and `resource_id`.
+- Composite index on `school_id` and `created_at` is expected for tenant audit review.
+- Composite index on `event_name` and `created_at` is expected for event analysis.
 
 #### Relationships
 - Many audit events may belong to one user as actor.
@@ -575,6 +588,11 @@ Immutable record of security-relevant, administrative, and tenant-sensitive even
 - Role
 - Platform-owned User records for Super Admin accounts
 
+### User Ownership Rule
+- Platform User records do not have `school_id`.
+- School User records must have `school_id`.
+- The table may remain conceptually shared, but scope must be explicit in future schema generation.
+
 ### Immutable Entities
 - AuditLog
 
@@ -594,6 +612,13 @@ Immutable record of security-relevant, administrative, and tenant-sensitive even
 - User records should deactivate or archive rather than hard delete.
 - Sessions should revoke or expire rather than delete manually.
 - RoleAssignments should revoke or archive rather than delete.
+
+### Session Invalidation Expectations
+- Password reset should revoke active sessions.
+- Password change should revoke active sessions.
+- Suspension should revoke active sessions.
+- Deactivation should revoke active sessions.
+- School suspension should revoke or invalidate tenant-scoped sessions.
 
 ## Security Considerations by Boundary
 - School boundary is the root isolation boundary.

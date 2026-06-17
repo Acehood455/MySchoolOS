@@ -129,6 +129,20 @@ The Foundation Phase must also avoid partial academic workflows, improvised repo
   - Password reset must be controlled and auditable.
   - User lifecycle changes must be logged.
 
+### User Ownership Scope
+- Platform User:
+  - Belongs to the platform.
+  - Does not carry `school_id`.
+  - Is used only for Super Admin and approved platform operations.
+- School User:
+  - Belongs to exactly one school.
+  - Must carry `school_id`.
+  - Is used for School Admin, Teacher, Parent, and Student accounts.
+- Role definitions are global.
+- Role assignments are tenant-scoped.
+- Roles do not grant access by themselves.
+- `RoleAssignment` grants access within a school context.
+
 ### Session
 - Purpose: Represents an authenticated access session.
 - Responsibilities:
@@ -143,6 +157,8 @@ The Foundation Phase must also avoid partial academic workflows, improvised repo
   - Must use secure HttpOnly cookies.
   - Must support explicit revocation.
   - Must be bound to the resolved tenant context for tenant-scoped work.
+  - Must be revoked when a password is reset, a password is changed, an account is suspended, an account is deactivated, or a school is suspended.
+  - May be revoked by user logout, admin action, or security response action.
 
 ### Role
 - Purpose: Canonical authorization category.
@@ -235,6 +251,20 @@ The Foundation Phase must also avoid partial academic workflows, improvised repo
   - Must evaluate access server-side.
   - Must reject unauthorized actions before data access.
   - Must respect tenant scope and role scope together.
+
+### Super Admin Boundary Rules
+- Platform actions:
+  - Create school.
+  - Suspend school.
+  - Activate school.
+  - Manage platform settings.
+- Tenant actions:
+  - Occur inside a tenant context.
+  - Must record `school_id` in audit logs.
+- Cross-tenant actions:
+  - Are Super Admin only.
+  - Must be explicitly authorized.
+  - Must generate audit events.
 
 ### Audit Middleware
 - Purpose: Record security-relevant and operationally important actions.
