@@ -3,6 +3,9 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
     "strict": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
@@ -42,6 +45,9 @@
       ],
       "@myschoolos/observability/*": [
         "packages/observability/src/*"
+      ],
+      "@/*": [
+        "apps/web/src/*"
       ]
     }
   }

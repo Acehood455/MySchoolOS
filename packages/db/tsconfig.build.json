@@ -7,6 +7,10 @@
     "declarationMap": true,
     "emitDeclarationOnly": false
   },
+  "references": [
+    { "path": "../shared/tsconfig.build.json" },
+    { "path": "../observability/tsconfig.build.json" }
+  ],
   "include": ["src"],
   "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
 }

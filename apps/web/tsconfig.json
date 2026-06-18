@@ -6,6 +6,10 @@
     "noEmit": true,
     "types": ["vite/client"]
   },
+  "references": [
+    { "path": "../../packages/shared/tsconfig.json" },
+    { "path": "../../packages/ui/tsconfig.json" }
+  ],
   "include": ["src", "vite.config.ts", "tailwind.config.ts"],
   "exclude": ["dist", "node_modules"]
 }
