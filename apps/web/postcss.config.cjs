@@ -1,4 +1,4 @@
-/* global module */
+/* global module: readonly */
 module.exports = {
   plugins: {
     tailwindcss: {},

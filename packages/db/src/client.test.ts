@@ -1,23 +1,32 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const disconnect = vi.fn().mockResolvedValue(undefined);
-const queryRaw = vi.fn().mockResolvedValue(undefined);
-const prismaClientMock = vi.fn().mockImplementation(() => ({
-  $disconnect: disconnect,
-  $queryRaw: queryRaw
-}));
+const { mockPrismaClient, mockDisconnect, mockQueryRaw } = vi.hoisted(() => {
+  const disconnect = vi.fn().mockResolvedValue(undefined);
+  const queryRaw = vi.fn().mockResolvedValue(undefined);
+
+  // The mock implementation must be a regular function (not an arrow function)
+  // to support being called with 'new' (e.g. new PrismaClient()).
+  const prismaClient = vi.fn(function () {
+    return {
+      $disconnect: disconnect,
+      $queryRaw: queryRaw,
+    };
+  });
+
+  return { mockPrismaClient: prismaClient, mockDisconnect: disconnect, mockQueryRaw: queryRaw };
+});
 
 vi.mock("@prisma/client", () => ({
-  PrismaClient: prismaClientMock
+  PrismaClient: mockPrismaClient
 }));
 
 import { closePrismaClient, getPrismaClient } from "./client.js";
 
 describe("@myschoolos/db", () => {
   beforeEach(() => {
-    disconnect.mockClear();
-    queryRaw.mockClear();
-    prismaClientMock.mockClear();
+    mockDisconnect.mockClear();
+    mockQueryRaw.mockClear();
+    mockPrismaClient.mockClear();
   });
 
   it("returns a singleton prisma client", () => {
@@ -25,13 +34,13 @@ describe("@myschoolos/db", () => {
     const second = getPrismaClient();
 
     expect(first).toBe(second);
-    expect(prismaClientMock).toHaveBeenCalledTimes(1);
+    expect(mockPrismaClient).toHaveBeenCalledTimes(1);
   });
 
   it("disconnects the prisma client", async () => {
     getPrismaClient();
     await closePrismaClient();
 
-    expect(disconnect).toHaveBeenCalledTimes(1);
+    expect(mockDisconnect).toHaveBeenCalledTimes(1);
   });
 });
