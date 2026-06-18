@@ -1,3 +1,4 @@
+import React from "react";
 import type { ButtonHTMLAttributes, PropsWithChildren } from "react";
 import { cn } from "./lib/cn.js";
 

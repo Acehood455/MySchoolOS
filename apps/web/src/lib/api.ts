@@ -1,4 +1,4 @@
-import type { HealthResponse } from "@myschoolos/shared";
+import type { HealthResponse } from "../../../../packages/shared/src/index.js";
 
 export async function fetchHealth(apiBaseUrl: string): Promise<HealthResponse> {
   const response = await fetch(new URL("/health", apiBaseUrl), {
