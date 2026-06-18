@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "ignoreDeprecations": "5.0",
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,

@@ -7,7 +7,15 @@ let client: PrismaClient | null = null;
 
 export function getPrismaClient(): PrismaClient {
   if (!client) {
-    client = new PrismaClient();
+    const datasourceUrl = process.env.DATABASE_URL;
+
+    if (!datasourceUrl) {
+      throw new Error("DATABASE_URL is required to initialize PrismaClient");
+    }
+
+    client = new PrismaClient({
+      datasourceUrl
+    });
     logger.info("Prisma client initialized");
   }
 
