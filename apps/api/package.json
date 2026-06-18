@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@fastify/cors": "^10.0.0",
-    "@myschoolos/db": "workspace:*",
-    "@myschoolos/observability": "workspace:*",
-    "@myschoolos/shared": "workspace:*",
+    "@myschoolos/db": "0.1.0",
+    "@myschoolos/observability": "0.1.0",
+    "@myschoolos/shared": "0.1.0",
     "fastify": "^5.0.0",
     "zod": "^3.23.8"
   },

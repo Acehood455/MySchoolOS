@@ -10,8 +10,8 @@
     "./*": "./src/*"
   },
   "dependencies": {
-    "@myschoolos/observability": "workspace:*",
-    "@myschoolos/shared": "workspace:*",
+    "@myschoolos/observability": "0.1.0",
+    "@myschoolos/shared": "0.1.0",
     "@prisma/client": "^6.0.0"
   },
   "devDependencies": {

@@ -12,8 +12,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@myschoolos/shared": "workspace:*",
-    "@myschoolos/ui": "workspace:*",
+    "@myschoolos/shared": "0.1.0",
+    "@myschoolos/ui": "0.1.0",
     "@tanstack/react-query": "^5.51.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
