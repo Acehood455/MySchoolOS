@@ -10,7 +10,7 @@
     "dev:web": "npm run dev --workspace @myschoolos/web",
     "dev:api": "npm run dev --workspace @myschoolos/api",
     "dev:worker": "npm run dev --workspace @myschoolos/worker",
-    "build": "npm run build --workspaces",
+    "build": "npm run build --workspace @myschoolos/config && npm run build --workspace @myschoolos/shared && npm run build --workspace @myschoolos/observability && npm run build --workspace @myschoolos/ui && npm run build --workspace @myschoolos/db && npm run build --workspace @myschoolos/api && npm run build --workspace @myschoolos/worker && npm run build --workspace @myschoolos/web",
     "lint": "npm run lint --workspaces",
     "test": "npm run test --workspaces",
     "typecheck": "npm run typecheck --workspaces",

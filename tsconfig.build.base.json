@@ -1,0 +1,48 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "noUncheckedIndexedAccess": true,
+    "baseUrl": ".",
+    "paths": {
+      "@myschoolos/config": [
+        "packages/config/dist/index.d.ts"
+      ],
+      "@myschoolos/config/*": [
+        "packages/config/dist/*"
+      ],
+      "@myschoolos/shared": [
+        "packages/shared/dist/index.d.ts"
+      ],
+      "@myschoolos/shared/*": [
+        "packages/shared/dist/*"
+      ],
+      "@myschoolos/observability": [
+        "packages/observability/dist/index.d.ts"
+      ],
+      "@myschoolos/observability/*": [
+        "packages/observability/dist/*"
+      ],
+      "@myschoolos/ui": [
+        "packages/ui/dist/index.d.ts"
+      ],
+      "@myschoolos/ui/*": [
+        "packages/ui/dist/*"
+      ],
+      "@myschoolos/db": [
+        "packages/db/dist/index.d.ts"
+      ],
+      "@myschoolos/db/*": [
+        "packages/db/dist/*"
+      ]
+    }
+  }
+}

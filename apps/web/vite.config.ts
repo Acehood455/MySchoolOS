@@ -6,7 +6,9 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url))
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@myschoolos/shared": fileURLToPath(new URL("../../packages/shared/src/index.ts", import.meta.url)),
+      "@myschoolos/ui": fileURLToPath(new URL("../../packages/ui/src/index.ts", import.meta.url))
     }
   },
   server: {
