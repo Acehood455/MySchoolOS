@@ -1,4 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { tenantData, tenantWhere } from "./tenant.js";
+import { createSchoolId, createTenantScope } from "./types.js";
+import { checkDatabaseHealth } from "./health.js";
 
 const { mockPrismaClient, mockDisconnect, mockQueryRaw } = vi.hoisted(() => {
   const disconnect = vi.fn().mockResolvedValue(undefined);
@@ -24,9 +27,14 @@ import { closePrismaClient, getPrismaClient } from "./client.js";
 
 describe("@myschoolos/db", () => {
   beforeEach(() => {
+    vi.stubEnv("DATABASE_URL", "postgresql://localhost/myschoolos-test");
     mockDisconnect.mockClear();
     mockQueryRaw.mockClear();
     mockPrismaClient.mockClear();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it("returns a singleton prisma client", () => {
@@ -42,5 +50,23 @@ describe("@myschoolos/db", () => {
     await closePrismaClient();
 
     expect(mockDisconnect).toHaveBeenCalledTimes(1);
+  });
+
+  it("builds tenant-scoped query helpers", () => {
+    const scope = createTenantScope("school-123");
+
+    expect(scope.schoolId).toBe("school-123");
+    expect(tenantWhere(scope, { status: "active" })).toEqual({
+      schoolId: "school-123",
+      status: "active"
+    });
+    expect(tenantData(scope, { name: "Primary School" })).toEqual({
+      schoolId: "school-123",
+      name: "Primary School"
+    });
+  });
+
+  it("reports database health", async () => {
+    await expect(checkDatabaseHealth()).resolves.toEqual({ status: "connected" });
   });
 });
