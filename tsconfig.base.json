@@ -1,0 +1,48 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "noUncheckedIndexedAccess": true,
+    "baseUrl": ".",
+    "paths": {
+      "@myschoolos/shared": [
+        "packages/shared/src/index.ts"
+      ],
+      "@myschoolos/shared/*": [
+        "packages/shared/src/*"
+      ],
+      "@myschoolos/ui": [
+        "packages/ui/src/index.ts"
+      ],
+      "@myschoolos/ui/*": [
+        "packages/ui/src/*"
+      ],
+      "@myschoolos/config": [
+        "packages/config/src/index.ts"
+      ],
+      "@myschoolos/config/*": [
+        "packages/config/src/*"
+      ],
+      "@myschoolos/db": [
+        "packages/db/src/index.ts"
+      ],
+      "@myschoolos/db/*": [
+        "packages/db/src/*"
+      ],
+      "@myschoolos/observability": [
+        "packages/observability/src/index.ts"
+      ],
+      "@myschoolos/observability/*": [
+        "packages/observability/src/*"
+      ]
+    }
+  }
+}
