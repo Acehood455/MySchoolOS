@@ -31,6 +31,10 @@ export interface FoundationRouteConfig {
     readonly resolveTenant?: boolean;
     readonly authenticate?: boolean;
     readonly permission?: FoundationPermission;
+    readonly security?: {
+      readonly throttle?: "general" | "login" | "password_reset";
+      readonly csrf?: boolean;
+    };
     readonly audit?: {
       readonly eventName: string;
       readonly resourceType: string;

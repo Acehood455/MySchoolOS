@@ -67,6 +67,12 @@ export interface AuthAuditEvent {
   readonly details?: Record<string, unknown>;
 }
 
+export interface LoginAttemptState {
+  readonly failedCount: number;
+  readonly windowStartedAt: number;
+  readonly lockedUntil?: number;
+}
+
 export interface AuthAuditSink {
   record(event: AuthAuditEvent): Promise<void> | void;
 }
@@ -93,6 +99,10 @@ export interface AuthServiceOptions extends AuthCookieSettings {
   readonly auditSink?: AuthAuditSink;
   readonly sessionTtlMs: number;
   readonly passwordResetTtlMs: number;
+  readonly loginFailureThreshold?: number;
+  readonly loginFailureWindowMs?: number;
+  readonly loginLockoutMs?: number;
+  readonly csrfCookieName?: string;
   readonly clock?: () => Date;
   readonly tokenFactory?: () => string;
   readonly passwordHasher?: (password: string) => Promise<string>;
@@ -103,12 +113,15 @@ export interface LoginInput {
   readonly tenantContext: TenantContext;
   readonly loginIdentifier: string;
   readonly password: string;
+  readonly priorSessionToken?: string | null;
 }
 
 export interface LoginResult {
   readonly authContext: AuthContext;
   readonly sessionToken: string;
   readonly setCookie: string;
+  readonly csrfToken: string;
+  readonly setCsrfCookie: string;
 }
 
 export interface ValidateSessionInput {
@@ -131,6 +144,7 @@ export interface LogoutInput {
 export interface LogoutResult {
   readonly revoked: boolean;
   readonly clearCookie: string;
+  readonly clearCsrfCookie: string;
 }
 
 export interface RequestPasswordResetInput {

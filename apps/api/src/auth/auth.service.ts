@@ -16,20 +16,45 @@ import type {
   ValidateSessionResult
 } from "./auth-context.js";
 import { createOpaqueToken, createPasswordHash, hashToken, verifyPassword } from "./password.service.js";
-import { clearSessionCookie, serializeSessionCookie } from "./session.service.js";
+import { clearCsrfCookie, clearSessionCookie, serializeCsrfCookie, serializeSessionCookie } from "./session.service.js";
 
 function defaultClock(): Date {
   return new Date();
 }
 
 export class AuthService {
+  private readonly loginAttempts = new Map<string, { failedCount: number; windowStartedAt: number; lockedUntil?: number }>();
+
   public constructor(private readonly options: AuthServiceOptions) {}
 
   public async login(input: LoginInput): Promise<LoginResult> {
     const now = this.clock();
+    const normalizedLoginIdentifier = input.loginIdentifier.trim().toLowerCase();
+    const securityKey = this.loginAttemptKey(input.tenantContext.schoolId, normalizedLoginIdentifier);
+    const loginState = this.loginAttempts.get(securityKey);
+
+    if (loginState?.lockedUntil && loginState.lockedUntil > now.getTime()) {
+      await this.audit({
+        eventName: "auth.login.failed",
+        schoolId: input.tenantContext.schoolId,
+        outcome: "failure",
+        reason: "account_locked",
+        details: {
+          loginIdentifier: input.loginIdentifier,
+          lockedUntil: new Date(loginState.lockedUntil).toISOString()
+        }
+      });
+
+      throw new AppError("Account is temporarily locked", {
+        status: 423,
+        code: "auth_account_locked"
+      });
+    }
+
     const user = await this.options.repository.findUserByLogin(input.loginIdentifier, input.tenantContext.schoolId);
 
     if (!user || user.status !== "active" || user.schoolId !== input.tenantContext.schoolId) {
+      this.recordFailedLogin(securityKey, now);
       await this.audit({
         eventName: "auth.login.failed",
         schoolId: input.tenantContext.schoolId,
@@ -50,6 +75,7 @@ export class AuthService {
     const valid = await passwordVerifier(input.password, user.passwordHash);
 
     if (!valid) {
+      const state = this.recordFailedLogin(securityKey, now);
       await this.audit({
         eventName: "auth.login.failed",
         schoolId: input.tenantContext.schoolId,
@@ -57,7 +83,9 @@ export class AuthService {
         outcome: "failure",
         reason: "invalid_credentials",
         details: {
-          loginIdentifier: input.loginIdentifier
+          loginIdentifier: input.loginIdentifier,
+          failedCount: state.failedCount,
+          lockedUntil: state.lockedUntil ? new Date(state.lockedUntil).toISOString() : undefined
         }
       });
 
@@ -67,7 +95,14 @@ export class AuthService {
       });
     }
 
+    this.clearFailedLogin(securityKey);
+
+    if (input.priorSessionToken) {
+      await this.revokeExistingSession(input.priorSessionToken, input.tenantContext.schoolId, "login_rotation");
+    }
+
     const sessionToken = this.options.tokenFactory?.() ?? createOpaqueToken();
+    const csrfToken = this.options.tokenFactory?.() ?? createOpaqueToken();
     const expiresAt = new Date(now.getTime() + this.options.sessionTtlMs);
     const sessionRecord = await this.options.repository.createSession({
       id: this.createSessionId(),
@@ -101,7 +136,15 @@ export class AuthService {
     return {
       authContext,
       sessionToken,
-      setCookie: serializeSessionCookie(sessionToken, this.options, this.options.sessionTtlMs / 1000)
+      setCookie: serializeSessionCookie(sessionToken, this.options, this.options.sessionTtlMs / 1000),
+      csrfToken,
+      setCsrfCookie: serializeCsrfCookie(csrfToken, {
+        name: this.csrfCookieName(),
+        domain: this.options.domain,
+        path: this.options.path,
+        secure: true,
+        sameSite: this.options.sameSite ?? "lax"
+      })
     };
   }
 
@@ -236,13 +279,23 @@ export class AuthService {
       outcome: "success"
     });
 
+    const csrfToken = this.options.tokenFactory?.() ?? createOpaqueToken();
+
     return {
       authContext: {
         ...validation.authContext,
         expiresAt: refreshedExpiresAt
       },
       sessionToken: refreshedToken,
-      setCookie: serializeSessionCookie(refreshedToken, this.options, this.options.sessionTtlMs / 1000)
+      setCookie: serializeSessionCookie(refreshedToken, this.options, this.options.sessionTtlMs / 1000),
+      csrfToken,
+      setCsrfCookie: serializeCsrfCookie(csrfToken, {
+        name: this.csrfCookieName(),
+        domain: this.options.domain,
+        path: this.options.path,
+        secure: true,
+        sameSite: this.options.sameSite ?? "lax"
+      })
     };
   }
 
@@ -259,7 +312,14 @@ export class AuthService {
 
       return {
         revoked: false,
-        clearCookie: clearSessionCookie(this.options)
+        clearCookie: clearSessionCookie(this.options),
+        clearCsrfCookie: clearCsrfCookie({
+          name: this.csrfCookieName(),
+          domain: this.options.domain,
+          path: this.options.path,
+          secure: true,
+          sameSite: this.options.sameSite ?? "lax"
+        })
       };
     }
 
@@ -275,7 +335,14 @@ export class AuthService {
 
       return {
         revoked: false,
-        clearCookie: clearSessionCookie(this.options)
+        clearCookie: clearSessionCookie(this.options),
+        clearCsrfCookie: clearCsrfCookie({
+          name: this.csrfCookieName(),
+          domain: this.options.domain,
+          path: this.options.path,
+          secure: true,
+          sameSite: this.options.sameSite ?? "lax"
+        })
       };
     }
 
@@ -304,7 +371,14 @@ export class AuthService {
 
     return {
       revoked: true,
-      clearCookie: clearSessionCookie(this.options)
+      clearCookie: clearSessionCookie(this.options),
+      clearCsrfCookie: clearCsrfCookie({
+        name: this.csrfCookieName(),
+        domain: this.options.domain,
+        path: this.options.path,
+        secure: true,
+        sameSite: this.options.sameSite ?? "lax"
+      })
     };
   }
 
@@ -472,6 +546,66 @@ export class AuthService {
 
   private createBrandId(prefix: string): string {
     return `${prefix}_${createOpaqueToken(12)}`;
+  }
+
+  private csrfCookieName(): string {
+    return this.options.csrfCookieName ?? `${this.options.name}_csrf`;
+  }
+
+  private loginAttemptKey(schoolId: string, loginIdentifier: string): string {
+    return `${schoolId}:${loginIdentifier}`;
+  }
+
+  private recordFailedLogin(key: string, now: Date): { failedCount: number; lockedUntil?: number } {
+    const windowMs = this.options.loginFailureWindowMs ?? 15 * 60_000;
+    const threshold = this.options.loginFailureThreshold ?? 5;
+    const lockoutMs = this.options.loginLockoutMs ?? 15 * 60_000;
+    const current = this.loginAttempts.get(key);
+
+    if (!current || now.getTime() - current.windowStartedAt > windowMs) {
+      const next = { failedCount: 1, windowStartedAt: now.getTime() };
+      this.loginAttempts.set(key, next);
+
+      return next;
+    }
+
+    const failedCount = current.failedCount + 1;
+    const lockedUntil = failedCount >= threshold ? now.getTime() + lockoutMs : current.lockedUntil;
+    const next = {
+      failedCount,
+      windowStartedAt: current.windowStartedAt,
+      lockedUntil
+    };
+
+    this.loginAttempts.set(key, next);
+
+    return next;
+  }
+
+  private clearFailedLogin(key: string): void {
+    this.loginAttempts.delete(key);
+  }
+
+  private async revokeExistingSession(sessionToken: string, tenantSchoolId: string, reason: string): Promise<void> {
+    const session = await this.options.repository.findSessionByTokenHash(hashToken(sessionToken));
+
+    if (!session || session.schoolId !== tenantSchoolId || session.status !== "active") {
+      return;
+    }
+
+    await this.options.repository.updateSessionStatus(session.id, "revoked", {
+      revokedAt: this.clock(),
+      revokedReason: reason
+    });
+
+    await this.audit({
+      eventName: "auth.session.revoked",
+      schoolId: tenantSchoolId,
+      userId: session.userId,
+      sessionId: session.id,
+      outcome: "success",
+      reason
+    });
   }
 
   private async audit(event: Parameters<NonNullable<AuthServiceOptions["auditSink"]>["record"]>[0]): Promise<void> {

@@ -13,8 +13,29 @@ export interface AuthRouteOptions {
   readonly cookieName: string;
 }
 
-function setAuthCookie(reply: FastifyReply, cookie: string): void {
-  reply.header("Set-Cookie", cookie);
+function setCookies(reply: FastifyReply, cookies: readonly string[]): void {
+  reply.header("Set-Cookie", cookies.length === 1 ? cookies[0] : [...cookies]);
+}
+
+function getPriorSessionToken(request: FastifyRequest, cookieName: string): string | null {
+  const header = request.headers.cookie;
+
+  if (!header) {
+    return null;
+  }
+
+  for (const part of header.split(";")) {
+    const trimmed = part.trim();
+
+    if (!trimmed.startsWith(`${cookieName}=`)) {
+      continue;
+    }
+
+    const value = trimmed.slice(cookieName.length + 1);
+    return value ? decodeURIComponent(value) : null;
+  }
+
+  return null;
 }
 
 export async function registerAuthRoutes(app: FastifyInstance, options: AuthRouteOptions): Promise<void> {
@@ -23,7 +44,10 @@ export async function registerAuthRoutes(app: FastifyInstance, options: AuthRout
     {
       config: {
         foundation: {
-          resolveTenant: true
+          resolveTenant: true,
+          security: {
+            throttle: "login"
+          }
         }
       }
     },
@@ -33,13 +57,15 @@ export async function registerAuthRoutes(app: FastifyInstance, options: AuthRout
       const result = await options.authService.login({
         tenantContext: foundationContext.tenantContext!,
         loginIdentifier: body.loginIdentifier,
-        password: body.password
+        password: body.password,
+        priorSessionToken: getPriorSessionToken(request, options.cookieName)
       });
 
-      setAuthCookie(reply, result.setCookie);
+      setCookies(reply, [result.setCookie, result.setCsrfCookie]);
 
       return {
-        authContext: result.authContext
+        authContext: result.authContext,
+        csrfToken: result.csrfToken
       };
     }
   );
@@ -50,7 +76,10 @@ export async function registerAuthRoutes(app: FastifyInstance, options: AuthRout
       config: {
         foundation: {
           resolveTenant: true,
-          authenticate: true
+          authenticate: true,
+          security: {
+            csrf: true
+          }
         }
       }
     },
@@ -70,7 +99,10 @@ export async function registerAuthRoutes(app: FastifyInstance, options: AuthRout
       config: {
         foundation: {
           resolveTenant: true,
-          authenticate: true
+          authenticate: true,
+          security: {
+            csrf: true
+          }
         }
       }
     },
@@ -83,7 +115,7 @@ export async function registerAuthRoutes(app: FastifyInstance, options: AuthRout
         reason: body.reason
       });
 
-      setAuthCookie(reply, result.clearCookie);
+      setCookies(reply, [result.clearCookie, result.clearCsrfCookie]);
 
       return {
         revoked: result.revoked
@@ -96,7 +128,10 @@ export async function registerAuthRoutes(app: FastifyInstance, options: AuthRout
     {
       config: {
         foundation: {
-          resolveTenant: true
+          resolveTenant: true,
+          security: {
+            throttle: "password_reset"
+          }
         }
       }
     },
@@ -117,7 +152,10 @@ export async function registerAuthRoutes(app: FastifyInstance, options: AuthRout
     {
       config: {
         foundation: {
-          resolveTenant: true
+          resolveTenant: true,
+          security: {
+            throttle: "password_reset"
+          }
         }
       }
     },

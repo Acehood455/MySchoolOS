@@ -36,9 +36,7 @@ export function serializeSessionCookie(value: string, settings: AuthCookieSettin
     parts.push(`Domain=${settings.domain}`);
   }
 
-  if (settings.secure) {
-    parts.push("Secure");
-  }
+  parts.push("Secure");
 
   return parts.join("; ");
 }
@@ -50,8 +48,31 @@ export function clearSessionCookie(settings: AuthCookieSettings): string {
     parts.push(`Domain=${settings.domain}`);
   }
 
-  if (settings.secure) {
-    parts.push("Secure");
+  parts.push("Secure");
+
+  return parts.join("; ");
+}
+
+export function serializeCsrfCookie(value: string, settings: AuthCookieSettings): string {
+  const parts = [
+    `${settings.name}=${encodeURIComponent(value)}`,
+    `Path=${settings.path ?? "/"}`,
+    `SameSite=${settings.sameSite ?? "lax"}`,
+    "Secure"
+  ];
+
+  if (settings.domain) {
+    parts.push(`Domain=${settings.domain}`);
+  }
+
+  return parts.join("; ");
+}
+
+export function clearCsrfCookie(settings: AuthCookieSettings): string {
+  const parts = [`${settings.name}=`, `Path=${settings.path ?? "/"}`, "Max-Age=0", `SameSite=${settings.sameSite ?? "lax"}`, "Secure"];
+
+  if (settings.domain) {
+    parts.push(`Domain=${settings.domain}`);
   }
 
   return parts.join("; ");

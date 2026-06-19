@@ -174,7 +174,7 @@ describe("AuthService", () => {
       name: "myschoolos_session",
       secure: true,
       sameSite: "lax",
-      tokenFactory: createTokenFactory(["session-token-1"])
+      tokenFactory: createTokenFactory(["session-token-1", "csrf-token-1"])
     });
 
     const login = await service.login({
@@ -224,7 +224,7 @@ describe("AuthService", () => {
       name: "myschoolos_session",
       secure: true,
       sameSite: "lax",
-      tokenFactory: createTokenFactory(["session-token-1", "reset-token-1"])
+      tokenFactory: createTokenFactory(["session-token-1", "csrf-token-1", "reset-token-1"])
     });
 
     const login = await service.login({
@@ -264,5 +264,84 @@ describe("AuthService", () => {
       status: 401,
       code: "auth_session_revoked"
     });
+  });
+
+  it("locks the account after repeated failed login attempts", async () => {
+    const { repository } = await createRepository();
+    const auditSink = { record: vi.fn() };
+    const service = new AuthService({
+      repository,
+      auditSink,
+      sessionTtlMs: 60_000,
+      passwordResetTtlMs: 60_000,
+      loginFailureThreshold: 3,
+      loginLockoutMs: 120_000,
+      name: "myschoolos_session",
+      secure: true,
+      sameSite: "lax",
+      tokenFactory: createTokenFactory(["session-token-1", "csrf-token-1"])
+    });
+
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      await expect(
+        service.login({
+          tenantContext: createTenantContext(),
+          loginIdentifier: "teacher@example.com",
+          password: `wrong-${attempt}`
+        })
+      ).rejects.toMatchObject({
+        status: 401,
+        code: "auth_invalid_credentials"
+      });
+    }
+
+    await expect(
+      service.login({
+        tenantContext: createTenantContext(),
+        loginIdentifier: "teacher@example.com",
+        password: "initial-password"
+      })
+    ).rejects.toMatchObject({
+      status: 423,
+      code: "auth_account_locked"
+    });
+  });
+
+  it("rotates the session when a prior session token is supplied on login", async () => {
+    const { repository, sessions } = await createRepository();
+    const auditSink = { record: vi.fn() };
+    const service = new AuthService({
+      repository,
+      auditSink,
+      sessionTtlMs: 60_000,
+      passwordResetTtlMs: 60_000,
+      name: "myschoolos_session",
+      secure: true,
+      sameSite: "lax",
+      tokenFactory: createTokenFactory(["session-token-1", "csrf-token-1", "session-token-2", "csrf-token-2"])
+    });
+
+    const firstLogin = await service.login({
+      tenantContext: createTenantContext(),
+      loginIdentifier: "teacher@example.com",
+      password: "initial-password"
+    });
+
+    const secondLogin = await service.login({
+      tenantContext: createTenantContext(),
+      loginIdentifier: "teacher@example.com",
+      password: "initial-password",
+      priorSessionToken: firstLogin.sessionToken
+    });
+
+    expect(secondLogin.sessionToken).not.toBe(firstLogin.sessionToken);
+    expect(sessions.get(firstLogin.authContext.sessionId)?.status).toBe("revoked");
+    expect(sessions.get(secondLogin.authContext.sessionId)?.status).toBe("active");
+    expect(auditSink.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventName: "auth.session.revoked",
+        reason: "login_rotation"
+      })
+    );
   });
 });

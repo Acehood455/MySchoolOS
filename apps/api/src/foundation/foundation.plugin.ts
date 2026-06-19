@@ -1,5 +1,5 @@
 import { AppError, canRolePerform, type FoundationPermission } from "@myschoolos/shared";
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import type { AuditService } from "../audit/audit.service.js";
 import type { AuthService } from "../auth/auth.service.js";
 import { parseCookieHeader } from "../auth/session.service.js";
@@ -14,6 +14,12 @@ export interface FoundationIntegrationOptions {
   readonly authorizationService?: Pick<AuthorizationService, "resolveAuthorizationContext">;
   readonly auditService?: Pick<AuditService, "record">;
   readonly cookieName?: string;
+  readonly csrfCookieName?: string;
+}
+
+interface ThrottleBucket {
+  readonly count: number;
+  readonly windowEndsAt: number;
 }
 
 function getCorrelationId(request: FastifyRequest): string {
@@ -61,6 +67,11 @@ function routeFoundationConfig(routeOptions: { config?: FoundationRouteConfig })
 
 type FoundationHook = (request: FastifyRequest, reply: unknown) => Promise<void>;
 
+interface SecurityRouteContext {
+  readonly throttle?: "general" | "login" | "password_reset";
+  readonly csrfRequired: boolean;
+}
+
 function mergePreHandlers(existing: unknown, injected: FoundationHook[]): FoundationHook[] {
   const preHandlers = Array.isArray(existing) ? [...existing] : existing ? [existing as FoundationHook] : [];
 
@@ -70,6 +81,65 @@ function mergePreHandlers(existing: unknown, injected: FoundationHook[]): Founda
 function getSessionToken(request: FastifyRequest, cookieName: string): string | null {
   const cookies = parseCookieHeader(request.headers.cookie);
   return cookies[cookieName] ?? null;
+}
+
+function getRequestIp(request: FastifyRequest): string {
+  const forwarded = request.headers["x-forwarded-for"];
+
+  if (typeof forwarded === "string" && forwarded.trim()) {
+    return forwarded.split(",")[0]?.trim() ?? request.ip;
+  }
+
+  return request.ip;
+}
+
+function getCsrfToken(request: FastifyRequest, cookieName: string): string | null {
+  const header = request.headers["x-csrf-token"];
+  const cookies = parseCookieHeader(request.headers.cookie);
+  const cookieToken = cookies[cookieName] ?? null;
+
+  if (typeof header !== "string" || !header.trim() || !cookieToken) {
+    return null;
+  }
+
+  return header.trim() === cookieToken ? cookieToken : null;
+}
+
+function isUnsafeMethod(method: string): boolean {
+  return !["GET", "HEAD", "OPTIONS"].includes(method.toUpperCase());
+}
+
+function checkBucket(
+  bucketStore: Map<string, ThrottleBucket>,
+  key: string,
+  maxRequests: number,
+  windowMs: number,
+  now: number
+): { readonly allowed: boolean; readonly retryAfterSeconds?: number } {
+  const bucket = bucketStore.get(key);
+
+  if (!bucket || bucket.windowEndsAt <= now) {
+    bucketStore.set(key, {
+      count: 1,
+      windowEndsAt: now + windowMs
+    });
+
+    return { allowed: true };
+  }
+
+  if (bucket.count >= maxRequests) {
+    return {
+      allowed: false,
+      retryAfterSeconds: Math.max(1, Math.ceil((bucket.windowEndsAt - now) / 1000))
+    };
+  }
+
+  bucketStore.set(key, {
+    count: bucket.count + 1,
+    windowEndsAt: bucket.windowEndsAt
+  });
+
+  return { allowed: true };
 }
 
 async function recordAuthFailure(
@@ -291,6 +361,7 @@ function normalizeRouteConfig(routeOptions: { config?: FoundationRouteConfig }):
   readonly resolveTenant: boolean;
   readonly authenticate: boolean;
   readonly permission?: FoundationPermission;
+  readonly security?: SecurityRouteContext;
   readonly audit?: {
     readonly eventName: string;
     readonly resourceType: string;
@@ -303,6 +374,10 @@ function normalizeRouteConfig(routeOptions: { config?: FoundationRouteConfig }):
     resolveTenant: foundation?.resolveTenant ?? false,
     authenticate: foundation?.authenticate ?? false,
     permission: foundation?.permission,
+    security: {
+      throttle: foundation?.security?.throttle,
+      csrfRequired: foundation?.security?.csrf ?? false
+    },
     audit: foundation?.audit
   };
 }
@@ -311,6 +386,10 @@ export async function registerFoundationPlugin(
   app: FastifyInstance,
   options: FoundationIntegrationOptions = {}
 ): Promise<void> {
+  const globalThrottleBuckets = new Map<string, ThrottleBucket>();
+  const loginThrottleBuckets = new Map<string, ThrottleBucket>();
+  const passwordResetThrottleBuckets = new Map<string, ThrottleBucket>();
+
   app.decorateRequest("foundationContext", null);
 
   app.addHook("onRequest", async (request) => {
@@ -319,16 +398,30 @@ export async function registerFoundationPlugin(
       method: request.method,
       url: request.url
     });
+
+    const rateLimitResult = checkBucket(globalThrottleBuckets, `request:${getRequestIp(request)}`, 300, 60_000, Date.now());
+
+    if (!rateLimitResult.allowed) {
+      throw new AppError("Too many requests", {
+        status: 429,
+        code: "rate_limited",
+        details: {
+          retryAfterSeconds: rateLimitResult.retryAfterSeconds
+        }
+      });
+    }
   });
 
   app.addHook("onRoute", (routeOptions) => {
     const foundation = normalizeRouteConfig(routeOptions);
+    const routeMethod = String(Array.isArray(routeOptions.method) ? routeOptions.method[0] ?? "GET" : routeOptions.method ?? "GET");
 
     if (!foundation.resolveTenant && !foundation.authenticate && !foundation.permission && !foundation.audit) {
       return;
     }
 
     const injectedPreHandlers: FoundationHook[] = [];
+    const security = foundation.security;
 
     if (foundation.resolveTenant || foundation.authenticate || foundation.permission) {
       injectedPreHandlers.push(async (request) => {
@@ -339,6 +432,33 @@ export async function registerFoundationPlugin(
         }
 
         await resolveTenant(request, options);
+      });
+    }
+
+    if (security?.throttle) {
+      injectedPreHandlers.push(async (request) => {
+        const now = Date.now();
+        const ip = getRequestIp(request);
+        const routePath = String(Array.isArray(routeOptions.url) ? routeOptions.url[0] ?? request.url : routeOptions.url ?? request.url);
+        const bucketStore =
+          security.throttle === "login"
+            ? loginThrottleBuckets
+            : security.throttle === "password_reset"
+              ? passwordResetThrottleBuckets
+              : globalThrottleBuckets;
+        const limit = security.throttle === "login" ? 5 : security.throttle === "password_reset" ? 6 : 60;
+        const windowMs = security.throttle === "login" ? 15 * 60_000 : security.throttle === "password_reset" ? 15 * 60_000 : 60_000;
+        const rateLimitResult = checkBucket(bucketStore, `${security.throttle}:${ip}:${routeMethod}:${routePath}`, limit, windowMs, now);
+
+        if (!rateLimitResult.allowed) {
+          throw new AppError("Too many requests", {
+            status: 429,
+            code: "rate_limited",
+            details: {
+              retryAfterSeconds: rateLimitResult.retryAfterSeconds
+            }
+          });
+        }
       });
     }
 
@@ -368,7 +488,30 @@ export async function registerFoundationPlugin(
       });
     }
 
+    if ((security?.csrfRequired || (foundation.authenticate || foundation.permission)) && isUnsafeMethod(routeMethod)) {
+      injectedPreHandlers.push(async (request) => {
+        const token = getCsrfToken(request, options.csrfCookieName ?? "myschoolos_csrf");
+
+        if (!token) {
+          throw new AppError("CSRF token is required", {
+            status: 403,
+            code: "csrf_token_invalid"
+          });
+        }
+      });
+    }
+
     routeOptions.preHandler = mergePreHandlers(routeOptions.preHandler, injectedPreHandlers);
+  });
+
+  app.addHook("onSend", async (_request, reply: FastifyReply, payload) => {
+    reply.header("X-Content-Type-Options", "nosniff");
+    reply.header("X-Frame-Options", "DENY");
+    reply.header("Referrer-Policy", "no-referrer");
+    reply.header("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+    reply.header("Cache-Control", "no-store");
+
+    return payload;
   });
 
   app.addHook("onResponse", async (request, reply) => {

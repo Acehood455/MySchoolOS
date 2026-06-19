@@ -48,6 +48,10 @@ describe("createApp observability", () => {
     });
 
     expect(response.statusCode).toBe(500);
+    expect(response.headers["x-content-type-options"]).toBe("nosniff");
+    expect(response.headers["x-frame-options"]).toBe("DENY");
+    expect(response.headers["referrer-policy"]).toBe("no-referrer");
+    expect(response.headers["permissions-policy"]).toContain("camera=()");
     expect(logSpy.mock.calls.length).toBeGreaterThanOrEqual(1);
     expect(errorSpy).toHaveBeenCalledTimes(1);
 

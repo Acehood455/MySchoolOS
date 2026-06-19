@@ -166,7 +166,7 @@ describe("auth routes", () => {
       name: "myschoolos_session",
       secure: true,
       sameSite: "lax",
-      tokenFactory: createTokenFactory(["session-token-1"])
+      tokenFactory: createTokenFactory(["session-token-1", "csrf-token-1"])
     });
     const app = fastify();
 
@@ -202,9 +202,11 @@ describe("auth routes", () => {
         userId: "user-1",
         schoolId: "school-123",
         loginIdentifier: "teacher@example.com"
-      }
+      },
+      csrfToken: "csrf-token-1"
     });
     expect(getSetCookieHeader(loginResponse.headers)).toContain("HttpOnly");
+    expect(getSetCookieHeader(loginResponse.headers)).toContain("Secure");
 
     const sessionResponse = await app.inject({
       method: "GET",
@@ -229,7 +231,8 @@ describe("auth routes", () => {
       url: "/auth/logout",
       headers: {
         host: "alpha.example.com",
-        cookie: "myschoolos_session=session-token-1"
+        cookie: "myschoolos_session=session-token-1; myschoolos_csrf=csrf-token-1",
+        "x-csrf-token": "csrf-token-1"
       },
       payload: {
         reason: "logout"
@@ -266,7 +269,7 @@ describe("auth routes", () => {
       name: "myschoolos_session",
       secure: true,
       sameSite: "lax",
-      tokenFactory: createTokenFactory(["session-token-1", "reset-token-1"])
+      tokenFactory: createTokenFactory(["session-token-1", "csrf-token-1", "reset-token-1"])
     });
     const app = fastify();
 
@@ -342,6 +345,126 @@ describe("auth routes", () => {
     expect(revokedResponse.statusCode).toBe(401);
     expect(revokedResponse.json()).toMatchObject({
       code: "auth_session_revoked"
+    });
+  });
+
+  it("throttles repeated login attempts at the route boundary", async () => {
+    const { repository } = await createRepository();
+    const service = new AuthService({
+      repository,
+      sessionTtlMs: 60_000,
+      passwordResetTtlMs: 60_000,
+      name: "myschoolos_session",
+      secure: true,
+      sameSite: "lax",
+      tokenFactory: createTokenFactory([])
+    });
+    const app = fastify();
+
+    await registerFoundationPlugin(app, {
+      tenantResolver: {
+        async resolve() {
+          return createTenantContext();
+        }
+      },
+      authService: service,
+      cookieName: "myschoolos_session"
+    });
+    await registerAuthRoutes(app, {
+      authService: service,
+      cookieName: "myschoolos_session"
+    });
+
+    for (let index = 0; index < 5; index += 1) {
+      const response = await app.inject({
+        method: "POST",
+        url: "/auth/login",
+        headers: {
+          host: "alpha.example.com"
+        },
+        payload: {
+          loginIdentifier: `missing-${index}@example.com`,
+          password: "wrong-password"
+        }
+      });
+
+      expect(response.statusCode).toBe(401);
+    }
+
+    const throttledResponse = await app.inject({
+      method: "POST",
+      url: "/auth/login",
+      headers: {
+        host: "alpha.example.com"
+      },
+      payload: {
+        loginIdentifier: "missing-5@example.com",
+        password: "wrong-password"
+      }
+    });
+
+    expect(throttledResponse.statusCode).toBe(429);
+    expect(throttledResponse.json()).toMatchObject({
+      code: "rate_limited"
+    });
+  });
+
+  it("throttles repeated password reset requests at the route boundary", async () => {
+    const { repository } = await createRepository();
+    const service = new AuthService({
+      repository,
+      sessionTtlMs: 60_000,
+      passwordResetTtlMs: 60_000,
+      name: "myschoolos_session",
+      secure: true,
+      sameSite: "lax",
+      tokenFactory: createTokenFactory([])
+    });
+    const app = fastify();
+
+    await registerFoundationPlugin(app, {
+      tenantResolver: {
+        async resolve() {
+          return createTenantContext();
+        }
+      },
+      authService: service,
+      cookieName: "myschoolos_session"
+    });
+    await registerAuthRoutes(app, {
+      authService: service,
+      cookieName: "myschoolos_session"
+    });
+
+    for (let index = 0; index < 6; index += 1) {
+      const response = await app.inject({
+        method: "POST",
+        url: "/auth/password-reset/request",
+        headers: {
+          host: "alpha.example.com"
+        },
+        payload: {
+          loginIdentifier: `missing-${index}@example.com`
+        }
+      });
+
+      expect(response.statusCode).toBe(200);
+    }
+
+    const throttledResponse = await app.inject({
+      method: "POST",
+      url: "/auth/password-reset/request",
+      headers: {
+        host: "alpha.example.com"
+      },
+      payload: {
+        loginIdentifier: "missing-6@example.com"
+      }
+    });
+
+    expect(throttledResponse.statusCode).toBe(429);
+    expect(throttledResponse.json()).toMatchObject({
+      code: "rate_limited"
     });
   });
 });
