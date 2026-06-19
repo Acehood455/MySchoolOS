@@ -8,12 +8,22 @@ export interface FoundationRequestContext {
   requestId: string;
   correlationId: string;
   tenantId: string | null;
-  tenantContext: TenantContext | null;
   actorId: string | null;
-  authContext: AuthContext | null;
-  authorizationContext: AuthorizationContext | null;
   roleAssignments: readonly RoleAssignmentRecord[];
   sessionToken: string | null;
+  tenantContext: TenantContext | null;
+  authContext: AuthContext | null;
+  authorizationContext: AuthorizationContext | null;
+}
+
+export interface ResolvedFoundationRequestContext extends FoundationRequestContext {
+  tenantId: string;
+  actorId: string;
+  tenantContext: TenantContext;
+  authContext: AuthContext;
+  authorizationContext: AuthorizationContext;
+  roleAssignments: readonly RoleAssignmentRecord[];
+  sessionToken: string;
 }
 
 export interface FoundationRouteConfig {
@@ -45,4 +55,18 @@ export function requireFoundationContext(
   if (!request.foundationContext) {
     throw new Error("Foundation context is required");
   }
+}
+
+export function hasResolvedFoundationContext(
+  context: FoundationRequestContext | null
+): context is ResolvedFoundationRequestContext {
+  return Boolean(
+    context &&
+      context.tenantContext &&
+      context.authContext &&
+      context.authorizationContext &&
+      context.tenantId &&
+      context.actorId &&
+      context.sessionToken
+  );
 }

@@ -69,6 +69,9 @@ Define the architectural direction, system boundaries, and decision principles s
 - Route handlers must consume the resolved request context instead of repeating tenant, session, or authorization checks.
 - The request context is the server-side source of truth for `requestId`, `correlationId`, `tenantId`, `actorId`, authenticated session state, and role assignments.
 - Authentication and authorization must reuse the resolved tenant context so tenant-scoped access stays bound to the same request boundary.
+- The API foundation layer owns the request hooks and plugin registration for tenant resolution, session authentication, authorization, and audit emission.
+- Failed tenant resolution, failed authentication, and denied authorization must all be auditable through the foundation pipeline.
+- Route handlers should read the resolved context only; they should not perform tenant resolution, session validation, or authorization checks themselves.
 
 ## Examples
 - Good architectural choice: a dedicated tenant context rule that applies to every tenant-scoped request.

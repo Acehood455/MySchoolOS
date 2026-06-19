@@ -1,3 +1,4 @@
+import { AppError } from "@myschoolos/shared";
 import fastify from "fastify";
 import { describe, expect, it, vi } from "vitest";
 import { TenantResolutionService } from "../tenant/tenant-resolution.service.js";
@@ -73,7 +74,7 @@ describe("foundation plugin", () => {
       auditService: {
         async record(event) {
           order.push("audit");
-          auditEvents.push(event as Record<string, unknown>);
+          auditEvents.push(event as unknown as Record<string, unknown>);
           return event as never;
         }
       },
@@ -155,7 +156,7 @@ describe("foundation plugin", () => {
       subdomainBaseHost: "example.com",
       auditSink: {
         async record(event) {
-          auditEvents.push(event as Record<string, unknown>);
+          auditEvents.push(event as unknown as Record<string, unknown>);
         }
       }
     });
@@ -219,7 +220,7 @@ describe("foundation plugin", () => {
       },
       auditService: {
         async record(event) {
-          auditEvents.push(event as Record<string, unknown>);
+          auditEvents.push(event as unknown as Record<string, unknown>);
           return event as never;
         }
       },
@@ -261,6 +262,169 @@ describe("foundation plugin", () => {
         resourceType: "Session",
         outcome: "failure",
         reason: "missing_session"
+      })
+    );
+  });
+
+  it("audits authorization denials and prevents the route from executing", async () => {
+    const order: string[] = [];
+    const auditEvents: Array<Record<string, unknown>> = [];
+    const tenantContext = createTenantContext();
+    const authContext: AuthContext = {
+      sessionId: "session-1" as never,
+      userId: "user-1",
+      schoolId: tenantContext.schoolId,
+      expiresAt: new Date("2030-01-01T00:00:00.000Z"),
+      loginIdentifier: "teacher@example.com",
+      userStatus: "active"
+    };
+    const app = fastify();
+
+    await registerFoundationPlugin(app, {
+      tenantResolver: {
+        async resolve(host) {
+          order.push("tenant");
+          expect(host).toBe("alpha.example.com");
+          return tenantContext;
+        }
+      },
+      authService: {
+        async validateSession(input) {
+          order.push("auth");
+          expect(input.tenantContext).toBe(tenantContext);
+          expect(input.sessionToken).toBe("session-token-1");
+          return { authContext };
+        }
+      },
+      authorizationService: {
+        async resolveAuthorizationContext(input) {
+          order.push("authorization");
+          expect(input.authContext).toBe(authContext);
+          expect(input.tenantContext).toBe(tenantContext);
+          return {
+            userId: authContext.userId,
+            schoolId: tenantContext.schoolId,
+            roles: [],
+            roleAssignments: [],
+            invalidRoleAssignments: []
+          };
+        }
+      },
+      auditService: {
+        async record(event) {
+          order.push("audit");
+          auditEvents.push(event as unknown as Record<string, unknown>);
+          return event as never;
+        }
+      },
+      cookieName: "myschoolos_session"
+    });
+
+    app.get(
+      "/forbidden",
+      {
+        config: {
+          foundation: {
+            resolveTenant: true,
+            authenticate: true,
+            permission: "role.assign"
+          }
+        }
+      },
+      async () => {
+        order.push("route");
+
+        return {
+          ok: true
+        };
+      }
+    );
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/forbidden",
+      headers: {
+        host: "alpha.example.com",
+        cookie: "myschoolos_session=session-token-1"
+      }
+    });
+
+    expect(response.statusCode).toBe(403);
+    expect(response.json()).toMatchObject({
+      code: "permission_denied"
+    });
+    expect(order).toEqual(["tenant", "auth", "authorization", "audit"]);
+    expect(auditEvents).toContainEqual(
+      expect.objectContaining({
+        eventName: "permission.denied",
+        actorType: "user",
+        actorId: "user-1",
+        schoolId: "school-123",
+        resourceType: "Protected resource",
+        outcome: "failure",
+        reason: "forbidden",
+        metadata: expect.objectContaining({
+          permission: "role.assign"
+        })
+      })
+    );
+  });
+
+  it("audits failed tenant resolution through the shared audit service", async () => {
+    const auditEvents: Array<Record<string, unknown>> = [];
+    const app = fastify();
+
+    await registerFoundationPlugin(app, {
+      tenantResolver: {
+        async resolve() {
+          throw new AppError("Tenant Not Found", {
+            status: 404,
+            code: "tenant_not_found"
+          });
+        }
+      },
+      auditService: {
+        async record(event) {
+          auditEvents.push(event as unknown as Record<string, unknown>);
+          return event as never;
+        }
+      },
+      cookieName: "myschoolos_session"
+    });
+
+    app.get(
+      "/needs-tenant",
+      {
+        config: {
+          foundation: {
+            resolveTenant: true
+          }
+        }
+      },
+      async () => ({
+        ok: true
+      })
+    );
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/needs-tenant",
+      headers: {
+        host: "unknown.example.com"
+      }
+    });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.json()).toMatchObject({
+      code: "tenant_not_found"
+    });
+    expect(auditEvents).toContainEqual(
+      expect.objectContaining({
+        eventName: "tenant.resolution.failed",
+        actorType: "system",
+        resourceType: "SchoolDomain",
+        outcome: "failure",
+        reason: "tenant_not_found"
       })
     );
   });

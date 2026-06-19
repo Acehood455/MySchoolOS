@@ -1,17 +1,17 @@
 import { AppError, canRolePerform, type FoundationPermission } from "@myschoolos/shared";
-import type { FastifyInstance, FastifyRequest, RouteOptions } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { AuditService } from "../audit/audit.service.js";
 import type { AuthService } from "../auth/auth.service.js";
 import { parseCookieHeader } from "../auth/session.service.js";
 import type { AuthorizationService } from "../authorization/authorization.service.js";
 import type { TenantResolutionService } from "../tenant/tenant-resolution.service.js";
-import type { FoundationRequestContext } from "./foundation-context.js";
+import { hasResolvedFoundationContext, type FoundationRequestContext, type FoundationRouteConfig } from "./foundation-context.js";
 
 export interface FoundationIntegrationOptions {
   readonly tenantResolver?: Pick<TenantResolutionService, "resolve">;
   readonly authService?: Pick<AuthService, "validateSession">;
   readonly authorizationService?: Pick<AuthorizationService, "resolveAuthorizationContext">;
-  readonly auditService?: AuditService;
+  readonly auditService?: Pick<AuditService, "record">;
   readonly cookieName?: string;
 }
 
@@ -34,16 +34,16 @@ function createBaseContext(request: FastifyRequest): FoundationRequestContext {
     requestId: request.id,
     correlationId: getCorrelationId(request),
     tenantId: null,
-    tenantContext: null,
     actorId: null,
+    roleAssignments: [],
+    sessionToken: null,
+    tenantContext: null,
     authContext: null,
     authorizationContext: null,
-    roleAssignments: [],
-    sessionToken: null
   };
 }
 
-function routeFoundationConfig(routeOptions: RouteOptions) {
+function routeFoundationConfig(routeOptions: { config?: FoundationRouteConfig }) {
   return routeOptions.config?.foundation;
 }
 
@@ -81,6 +81,32 @@ async function recordAuthFailure(
     reason,
     metadata: {
       correlationId: request.headers["x-correlation-id"] ?? request.id
+    }
+  });
+}
+
+async function recordTenantResolutionFailure(
+  options: FoundationIntegrationOptions,
+  request: FastifyRequest,
+  reason: string,
+  tenantId?: string | null
+): Promise<void> {
+  if (!options.auditService) {
+    return;
+  }
+
+  await options.auditService.record({
+    eventName: "tenant.resolution.failed",
+    actorType: "system",
+    schoolId: tenantId ?? undefined,
+    resourceType: "SchoolDomain",
+    severity: "medium",
+    outcome: "failure",
+    requestId: request.id,
+    reason,
+    metadata: {
+      correlationId: request.headers["x-correlation-id"] ?? request.id,
+      host: request.headers.host
     }
   });
 }
@@ -125,13 +151,26 @@ async function resolveTenant(request: FastifyRequest, options: FoundationIntegra
     });
   }
 
-  const tenantContext = await options.tenantResolver.resolve(request.headers.host);
+  try {
+    const tenantContext = await options.tenantResolver.resolve(request.headers.host);
 
-  request.foundationContext = {
-    ...(request.foundationContext ?? createBaseContext(request)),
-    tenantId: tenantContext.schoolId,
-    tenantContext
-  };
+    request.foundationContext = {
+      ...(request.foundationContext ?? createBaseContext(request)),
+      tenantId: tenantContext.schoolId,
+      tenantContext
+    };
+  } catch (error) {
+    const context = request.foundationContext ?? createBaseContext(request);
+
+    await recordTenantResolutionFailure(
+      options,
+      request,
+      error instanceof AppError ? error.code : "tenant_resolution_failed",
+      context.tenantId
+    );
+
+    throw error;
+  }
 }
 
 async function authenticateRequest(request: FastifyRequest, options: FoundationIntegrationOptions): Promise<void> {
@@ -236,7 +275,7 @@ async function authorizeRequest(
   }
 }
 
-function normalizeRouteConfig(routeOptions: RouteOptions): {
+function normalizeRouteConfig(routeOptions: { config?: FoundationRouteConfig }): {
   readonly resolveTenant: boolean;
   readonly authenticate: boolean;
   readonly permission?: FoundationPermission;
@@ -279,7 +318,7 @@ export async function registerFoundationPlugin(
       injectedPreHandlers.push(async (request) => {
         const current = request.foundationContext;
 
-        if (current?.tenantContext) {
+        if (hasResolvedFoundationContext(current)) {
           return;
         }
 
@@ -299,17 +338,19 @@ export async function registerFoundationPlugin(
       });
     }
 
-    if (foundation.permission) {
-      injectedPreHandlers.push(async (request) => {
-        const current = request.foundationContext;
+  if (foundation.permission) {
+    const permission = foundation.permission;
 
-        if (current?.authorizationContext) {
-          return;
-        }
+    injectedPreHandlers.push(async (request) => {
+      const current = request.foundationContext;
 
-        await authorizeRequest(request, options, foundation.permission);
-      });
-    }
+      if (current?.authorizationContext) {
+        return;
+      }
+
+      await authorizeRequest(request, options, permission);
+    });
+  }
 
     routeOptions.preHandler = mergePreHandlers(routeOptions.preHandler, injectedPreHandlers);
   });

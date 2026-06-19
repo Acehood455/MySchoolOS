@@ -39,6 +39,7 @@ Define the canonical set of audit events for School OS so security, support, com
 | auth.session.created | A new session is issued. | System | Session | Low | Yes |
 | auth.session.refreshed | A session is extended or renewed. | System | Session | Low | Yes |
 | auth.session.revoked | A session is explicitly invalidated. | User, School Admin, Super Admin | Session | Medium | Yes |
+| auth.session.validation_failed | A session cannot be validated for the current tenant context. | System | Session validation | Medium | Yes |
 | auth.password.reset.requested | A reset request is issued. | User or admin | User account | Medium | Yes |
 | auth.password.reset.completed | A password is changed through reset flow. | User or admin | User account | High | Yes |
 | auth.mfa.challenge.deferred | MFA is not active because it is deferred. | System | Authentication policy | Low | No |
@@ -82,6 +83,8 @@ Define the canonical set of audit events for School OS so security, support, com
 | school.domain.conflict_rejected | A domain mapping conflict is rejected because the host is already in use. | Super Admin, School Admin, system | SchoolDomain | High | Yes |
 | school.domain.remapped | A domain is moved from one mapping to another. | Super Admin, School Admin | SchoolDomain | High | Yes |
 | school.domain.removed | A domain mapping is removed. | Super Admin, School Admin | SchoolDomain | High | Yes |
+| tenant.resolution.failed | Tenant resolution cannot find a verified host match. | System | Tenant resolution | Medium | Yes |
+| tenant.resolution.conflict | Tenant resolution finds conflicting host mappings. | System | Tenant resolution | High | Yes |
 | school.theme.updated | Branding settings are changed. | School Admin | SchoolTheme | Medium | Yes |
 | school.settings.updated | Operational settings are changed. | School Admin | SchoolSettings | Medium | Yes |
 
