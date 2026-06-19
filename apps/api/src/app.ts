@@ -12,14 +12,38 @@ export interface CreateAppOptions {
   readonly cookieName?: string;
 }
 
+function resolveCorrelationId(header: string | string[] | undefined, fallback: string): string {
+  if (Array.isArray(header)) {
+    return header[0] ?? fallback;
+  }
+
+  if (typeof header === "string" && header.trim()) {
+    return header.trim();
+  }
+
+  return fallback;
+}
+
 export function createApp(options: CreateAppOptions = {}) {
   const app = fastify({
-    logger: true
+    logger: false
   });
 
   app.setErrorHandler((error, request, reply) => {
     const details = toProblemDetails(error, request.url);
-    request.log.error({ error: details }, "request failed");
+    apiLogger
+      .withContext({
+        requestId: request.foundationContext?.requestId ?? request.id,
+        correlationId: request.foundationContext?.correlationId ?? resolveCorrelationId(request.headers["x-correlation-id"], request.id),
+        actorId: request.foundationContext?.actorId ?? null,
+        tenantId: request.foundationContext?.tenantId ?? request.foundationContext?.tenantContext?.schoolId ?? null
+      })
+      .error("request.failed", {
+        error: details,
+        method: request.method,
+        url: request.url,
+        statusCode: details.status
+      });
     void reply.status(details.status).send(details);
   });
 

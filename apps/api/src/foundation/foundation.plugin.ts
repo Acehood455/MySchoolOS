@@ -6,6 +6,7 @@ import { parseCookieHeader } from "../auth/session.service.js";
 import type { AuthorizationService } from "../authorization/authorization.service.js";
 import type { TenantResolutionService } from "../tenant/tenant-resolution.service.js";
 import { hasResolvedFoundationContext, type FoundationRequestContext, type FoundationRouteConfig } from "./foundation-context.js";
+import { createLogger } from "@myschoolos/observability";
 
 export interface FoundationIntegrationOptions {
   readonly tenantResolver?: Pick<TenantResolutionService, "resolve">;
@@ -41,6 +42,17 @@ function createBaseContext(request: FastifyRequest): FoundationRequestContext {
     authContext: null,
     authorizationContext: null,
   };
+}
+
+function createRequestLogger(request: FastifyRequest) {
+  const context = request.foundationContext ?? createBaseContext(request);
+
+  return createLogger("api.foundation", {
+    requestId: context.requestId,
+    correlationId: context.correlationId,
+    actorId: context.actorId,
+    tenantId: context.tenantId ?? context.tenantContext?.schoolId ?? null
+  });
 }
 
 function routeFoundationConfig(routeOptions: { config?: FoundationRouteConfig }) {
@@ -303,6 +315,10 @@ export async function registerFoundationPlugin(
 
   app.addHook("onRequest", async (request) => {
     request.foundationContext = createBaseContext(request);
+    createRequestLogger(request).info("request.received", {
+      method: request.method,
+      url: request.url
+    });
   });
 
   app.addHook("onRoute", (routeOptions) => {
@@ -338,30 +354,32 @@ export async function registerFoundationPlugin(
       });
     }
 
-  if (foundation.permission) {
-    const permission = foundation.permission;
+    if (foundation.permission) {
+      const permission = foundation.permission;
 
-    injectedPreHandlers.push(async (request) => {
-      const current = request.foundationContext;
+      injectedPreHandlers.push(async (request) => {
+        const current = request.foundationContext;
 
-      if (current?.authorizationContext) {
-        return;
-      }
+        if (current?.authorizationContext) {
+          return;
+        }
 
-      await authorizeRequest(request, options, permission);
-    });
-  }
+        await authorizeRequest(request, options, permission);
+      });
+    }
 
     routeOptions.preHandler = mergePreHandlers(routeOptions.preHandler, injectedPreHandlers);
   });
 
   app.addHook("onResponse", async (request, reply) => {
+    createRequestLogger(request).info("request.completed", {
+      method: request.method,
+      url: request.url,
+      statusCode: reply.statusCode
+    });
+
     if (reply.statusCode < 400) {
       await recordRouteAudit(options, request, "success");
     }
-  });
-
-  app.addHook("onError", async (request, _reply, _error) => {
-    await recordRouteAudit(options, request, "failure");
   });
 }

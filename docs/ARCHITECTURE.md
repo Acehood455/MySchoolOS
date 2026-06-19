@@ -60,6 +60,7 @@ Define the architectural direction, system boundaries, and decision principles s
 - Authentication and authorization
 - Tenant resolution
 - Audit logging
+- Structured observability logging
 - Notifications
 - Observability
 - Background processing
@@ -72,6 +73,8 @@ Define the architectural direction, system boundaries, and decision principles s
 - The API foundation layer owns the request hooks and plugin registration for tenant resolution, session authentication, authorization, and audit emission.
 - Failed tenant resolution, failed authentication, and denied authorization must all be auditable through the foundation pipeline.
 - Route handlers should read the resolved context only; they should not perform tenant resolution, session validation, or authorization checks themselves.
+- Request logs must be structured JSON and must carry request, correlation, tenant, and actor context on every record.
+- Request lifecycle logs should capture request receipt, completion, and failures at the API boundary.
 
 ## Examples
 - Good architectural choice: a dedicated tenant context rule that applies to every tenant-scoped request.
