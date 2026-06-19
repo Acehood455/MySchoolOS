@@ -1,10 +1,19 @@
 import fastify from "fastify";
 import cors from "@fastify/cors";
+import type { AuthService } from "./auth/auth.service.js";
+import { registerTenantMiddleware } from "./tenant/tenant.middleware.js";
+import type { TenantResolutionService } from "./tenant/tenant-resolution.service.js";
 import { registerRoutes } from "./routes/index.js";
 import { toProblemDetails } from "./errors.js";
 import { apiLogger } from "./logger.js";
 
-export function createApp() {
+export interface CreateAppOptions {
+  readonly tenantResolver?: Pick<TenantResolutionService, "resolve">;
+  readonly authService?: AuthService;
+  readonly cookieName?: string;
+}
+
+export function createApp(options: CreateAppOptions = {}) {
   const app = fastify({
     logger: true
   });
@@ -19,7 +28,16 @@ export function createApp() {
     origin: true
   });
 
-  void app.register(registerRoutes);
+  if (options.tenantResolver) {
+    void app.register(registerTenantMiddleware, {
+      resolver: options.tenantResolver
+    });
+  }
+
+  void app.register(registerRoutes, {
+    authService: options.authService,
+    cookieName: options.cookieName ?? "myschoolos_session"
+  });
 
   app.get("/", async () => ({
     status: "ok",

@@ -3,7 +3,7 @@ import type { TenantContext } from "@myschoolos/shared";
 import { TenantResolutionService } from "./tenant-resolution.service.js";
 
 export interface TenantMiddlewareOptions {
-  readonly resolver: TenantResolutionService;
+  readonly resolver: Pick<TenantResolutionService, "resolve">;
 }
 
 export const tenantContextKey = "tenantContext" as const;
