@@ -1,9 +1,9 @@
 import fastify from "fastify";
 import { describe, expect, it } from "vitest";
-import { registerTenantMiddleware } from "../tenant/tenant.middleware.js";
 import { registerAuthRoutes } from "./auth.routes.js";
 import { AuthService } from "./auth.service.js";
 import type { AuthRepository, AuthUserRecord, PasswordResetRecord, SessionRecord } from "./auth-context.js";
+import { registerFoundationPlugin } from "../foundation/foundation.plugin.js";
 import { createPasswordHash } from "./password.service.js";
 
 function createTenantContext() {
@@ -170,12 +170,14 @@ describe("auth routes", () => {
     });
     const app = fastify();
 
-    await registerTenantMiddleware(app, {
-      resolver: {
+    await registerFoundationPlugin(app, {
+      tenantResolver: {
         async resolve() {
           return createTenantContext();
         }
-      }
+      },
+      authService: service,
+      cookieName: "myschoolos_session"
     });
     await registerAuthRoutes(app, {
       authService: service,
@@ -268,12 +270,14 @@ describe("auth routes", () => {
     });
     const app = fastify();
 
-    await registerTenantMiddleware(app, {
-      resolver: {
+    await registerFoundationPlugin(app, {
+      tenantResolver: {
         async resolve() {
           return createTenantContext();
         }
-      }
+      },
+      authService: service,
+      cookieName: "myschoolos_session"
     });
     await registerAuthRoutes(app, {
       authService: service,

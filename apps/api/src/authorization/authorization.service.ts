@@ -47,16 +47,30 @@ export class AuthorizationService {
       throw error;
     }
 
-    if (authorizationContext.invalidRoleAssignments.length > 0) {
+    return this.authorizeResolved({
+      authContext: input.authContext,
+      tenantContext: input.tenantContext,
+      authorizationContext,
+      permission: input.permission
+    });
+  }
+
+  public async authorizeResolved(input: {
+    readonly authContext: ResolveAuthorizationInput["authContext"];
+    readonly tenantContext: ResolveAuthorizationInput["tenantContext"];
+    readonly authorizationContext: AuthorizationContext;
+    readonly permission: FoundationPermission;
+  }): Promise<AuthorizeResult> {
+    if (input.authorizationContext.invalidRoleAssignments.length > 0) {
       await this.auditDenied({
-        schoolId: authorizationContext.schoolId,
-        userId: authorizationContext.userId,
+        schoolId: input.authorizationContext.schoolId,
+        userId: input.authorizationContext.userId,
         sessionId: input.authContext.sessionId,
         permission: input.permission,
         reason: "invalid_role_assignment",
-        roles: authorizationContext.roles,
+        roles: input.authorizationContext.roles,
         details: {
-          invalidRoleAssignmentCount: authorizationContext.invalidRoleAssignments.length
+          invalidRoleAssignmentCount: input.authorizationContext.invalidRoleAssignments.length
         }
       });
 
@@ -66,16 +80,16 @@ export class AuthorizationService {
       });
     }
 
-    const allowed = this.isAllowed(authorizationContext.roles, input.permission);
+    const allowed = this.isAllowed(input.authorizationContext.roles, input.permission);
 
     if (!allowed) {
       await this.auditDenied({
-        schoolId: authorizationContext.schoolId,
-        userId: authorizationContext.userId,
+        schoolId: input.authorizationContext.schoolId,
+        userId: input.authorizationContext.userId,
         sessionId: input.authContext.sessionId,
         permission: input.permission,
-        reason: authorizationContext.roles.length === 0 ? "no_role_assignment" : "forbidden",
-        roles: authorizationContext.roles
+        reason: input.authorizationContext.roles.length === 0 ? "no_role_assignment" : "forbidden",
+        roles: input.authorizationContext.roles
       });
 
       throw new AppError("Permission denied", {
@@ -86,7 +100,7 @@ export class AuthorizationService {
 
     return {
       permitted: true,
-      authorizationContext
+      authorizationContext: input.authorizationContext
     };
   }
 

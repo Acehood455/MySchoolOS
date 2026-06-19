@@ -64,6 +64,12 @@ Define the architectural direction, system boundaries, and decision principles s
 - Observability
 - Background processing
 
+### Foundation Request Pipeline
+- Protected API requests must resolve tenant context once, then authenticate the session, then resolve authorization, then execute the route, then emit audit events.
+- Route handlers must consume the resolved request context instead of repeating tenant, session, or authorization checks.
+- The request context is the server-side source of truth for `requestId`, `correlationId`, `tenantId`, `actorId`, authenticated session state, and role assignments.
+- Authentication and authorization must reuse the resolved tenant context so tenant-scoped access stays bound to the same request boundary.
+
 ## Examples
 - Good architectural choice: a dedicated tenant context rule that applies to every tenant-scoped request.
 - Bad architectural choice: global data access helpers that quietly skip tenant checks.

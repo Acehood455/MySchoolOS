@@ -1,14 +1,13 @@
 import fastify from "fastify";
 import cors from "@fastify/cors";
 import type { AuthService } from "./auth/auth.service.js";
-import { registerTenantMiddleware } from "./tenant/tenant.middleware.js";
-import type { TenantResolutionService } from "./tenant/tenant-resolution.service.js";
+import { registerFoundationPlugin, type FoundationIntegrationOptions } from "./foundation/foundation.plugin.js";
 import { registerRoutes } from "./routes/index.js";
 import { toProblemDetails } from "./errors.js";
 import { apiLogger } from "./logger.js";
 
 export interface CreateAppOptions {
-  readonly tenantResolver?: Pick<TenantResolutionService, "resolve">;
+  readonly foundation?: FoundationIntegrationOptions;
   readonly authService?: AuthService;
   readonly cookieName?: string;
 }
@@ -28,14 +27,15 @@ export function createApp(options: CreateAppOptions = {}) {
     origin: true
   });
 
-  if (options.tenantResolver) {
-    void app.register(registerTenantMiddleware, {
-      resolver: options.tenantResolver
+  if (options.foundation) {
+    void registerFoundationPlugin(app, {
+      ...options.foundation,
+      cookieName: options.cookieName ?? options.foundation.cookieName ?? "myschoolos_session"
     });
   }
 
   void app.register(registerRoutes, {
-    authService: options.authService,
+    authService: options.authService ?? options.foundation?.authService,
     cookieName: options.cookieName ?? "myschoolos_session"
   });
 
