@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev:web",
+    "dev": "node scripts/dev.mjs",
     "dev:web": "npm run dev --workspace @myschoolos/web",
     "dev:api": "npm run dev --workspace @myschoolos/api",
     "dev:worker": "npm run dev --workspace @myschoolos/worker",
