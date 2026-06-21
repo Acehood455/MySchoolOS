@@ -5,11 +5,15 @@ import { registerFoundationPlugin, type FoundationIntegrationOptions } from "./f
 import { registerRoutes } from "./routes/index.js";
 import { toProblemDetails } from "./errors.js";
 import { apiLogger } from "./logger.js";
+import type { SchoolService } from "./school/school.service.js";
+import type { SchoolRouteOptions } from "./school/school.routes.js";
 
 export interface CreateAppOptions {
   readonly foundation?: FoundationIntegrationOptions;
   readonly authService?: AuthService;
   readonly cookieName?: string;
+  readonly schoolService?: SchoolService;
+  readonly schoolActorResolver?: SchoolRouteOptions["actorResolver"];
 }
 
 function resolveCorrelationId(header: string | string[] | undefined, fallback: string): string {
@@ -60,7 +64,9 @@ export function createApp(options: CreateAppOptions = {}) {
 
   void app.register(registerRoutes, {
     authService: options.authService ?? options.foundation?.authService,
-    cookieName: options.cookieName ?? "myschoolos_session"
+    cookieName: options.cookieName ?? "myschoolos_session",
+    schoolService: options.schoolService,
+    schoolActorResolver: options.schoolActorResolver
   });
 
   app.get("/", async () => ({
