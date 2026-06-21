@@ -17,6 +17,5 @@ export async function withTenantTransaction<T>(
   options?: TransactionOptions,
   client: PrismaClient = getPrismaClient()
 ): Promise<T> {
-  return client.$transaction((tx) => callback(tx, scope), options);
+  return client.$transaction((tx: TransactionClient) => callback(tx, scope), options);
 }
-
