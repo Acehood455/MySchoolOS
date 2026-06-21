@@ -1,5 +1,12 @@
 {
+  "framework": "vite",
   "installCommand": "npm ci --workspaces --include-workspace-root --include=dev",
   "buildCommand": "npm ls react tailwindcss @tanstack/react-query react-router-dom zod && npm run build --workspace @myschoolos/web",
-  "outputDirectory": "apps/web/dist"
+  "outputDirectory": "apps/web/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
