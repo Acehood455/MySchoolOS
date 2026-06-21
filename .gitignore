@@ -7,5 +7,4 @@ coverage
 .env.*.local
 *.log
 *.tsbuildinfo
-package-lock.json
 prisma/dev.db
