@@ -63,7 +63,7 @@ export function createApp(options: CreateAppOptions = {}) {
   }
 
   void app.register(registerRoutes, {
-    authService: options.authService ?? options.foundation?.authService,
+    authService: options.authService,
     cookieName: options.cookieName ?? "myschoolos_session",
     schoolService: options.schoolService,
     schoolActorResolver: options.schoolActorResolver
