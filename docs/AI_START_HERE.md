@@ -8,7 +8,7 @@ Do not proceed until all required documents have been reviewed.
 
 The documentation is the source of truth.
 
-If documentation and code conflict, documentation wins until explicitly updated.
+If documentation and code conflict, documentation wins until explicitly updated. 
 
 ## Purpose
 Give every AI tool a single starting point before it reads, plans, edits, or proposes changes.
