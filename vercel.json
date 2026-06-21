@@ -1,5 +1,5 @@
 {
-  "installCommand": "npm ci --workspaces --include-workspace-root",
-  "buildCommand": "npm ls react --workspace @myschoolos/web && npm run build --workspace @myschoolos/web",
+  "installCommand": "npm ci --workspaces --include-workspace-root --include=dev",
+  "buildCommand": "npm ls react tailwindcss --workspace @myschoolos/web && npm run build --workspace @myschoolos/web",
   "outputDirectory": "apps/web/dist"
 }
