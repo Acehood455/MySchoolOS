@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { tenantData, tenantWhere } from "./tenant.js";
 import { createSchoolId, createTenantScope } from "./types.js";
 import { checkDatabaseHealth } from "./health.js";
+import * as clientModule from "./client.js";
 
 const { mockPrismaClient, mockDisconnect, mockQueryRaw } = vi.hoisted(() => {
   const disconnect = vi.fn().mockResolvedValue(undefined);
@@ -68,5 +69,15 @@ describe("@myschoolos/db", () => {
 
   it("reports database health", async () => {
     await expect(checkDatabaseHealth()).resolves.toEqual({ status: "connected" });
+  });
+
+  it("reports database health as unavailable when the client cannot initialize", async () => {
+    const getPrismaClientSpy = vi.spyOn(clientModule, "getPrismaClient").mockImplementation(() => {
+      throw new Error("DATABASE_URL is required to initialize PrismaClient");
+    });
+
+    await expect(checkDatabaseHealth()).resolves.toEqual({ status: "unavailable" });
+
+    getPrismaClientSpy.mockRestore();
   });
 });
