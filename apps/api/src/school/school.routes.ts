@@ -55,7 +55,11 @@ export async function registerSchoolRoutes(app: FastifyInstance, options: School
 
     const school = await options.schoolService.createSchool({
       actor,
-      ...body
+      name: body.name,
+      legalName: body.legalName,
+      code: body.code,
+      description: body.description,
+      metadata: body.metadata
     });
 
     reply.code(201);
@@ -202,7 +206,11 @@ export async function registerSchoolRoutes(app: FastifyInstance, options: School
       return options.schoolService.updateSettings({
         actor,
         schoolId: params.schoolId ?? "",
-        ...body
+        timezone: body.timezone,
+        locale: body.locale,
+        academicSessionDefaults: body.academicSessionDefaults,
+        platformConfiguration: body.platformConfiguration,
+        metadata: body.metadata
       });
     }
   );
@@ -246,7 +254,11 @@ export async function registerSchoolRoutes(app: FastifyInstance, options: School
       return options.schoolService.updateTheme({
         actor,
         schoolId: params.schoolId ?? "",
-        ...body
+        logo: body.logo,
+        primaryColor: body.primaryColor,
+        secondaryColor: body.secondaryColor,
+        brandingConfiguration: body.brandingConfiguration,
+        metadata: body.metadata
       });
     }
   );
@@ -290,7 +302,10 @@ export async function registerSchoolRoutes(app: FastifyInstance, options: School
       const domain = await options.schoolService.addDomain({
         actor,
         schoolId: params.schoolId ?? "",
-        ...body
+        host: body.host,
+        hostType: body.hostType,
+        subdomain: body.subdomain,
+        metadata: body.metadata
       });
 
       reply.code(201);
@@ -319,7 +334,8 @@ export async function registerSchoolRoutes(app: FastifyInstance, options: School
         actor,
         schoolId: params.schoolId ?? "",
         domainId: params.domainId ?? "",
-        ...body
+        verifiedBy: body.verifiedBy,
+        metadata: body.metadata
       });
     }
   );
