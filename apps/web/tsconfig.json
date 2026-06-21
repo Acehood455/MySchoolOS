@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "ignoreDeprecations": "5.0",
-    "jsx": "react-jsx",
+    "jsx": "react",
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "noEmit": true,
     "types": ["vite/client", "node"]
