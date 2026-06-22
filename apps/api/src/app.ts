@@ -1,5 +1,6 @@
 import fastify from "fastify";
 import cors from "@fastify/cors";
+import type { AcademicService } from "./academic/academic.service.js";
 import type { AuthService } from "./auth/auth.service.js";
 import type { IdentityService } from "./identity/identity.service.js";
 import { registerFoundationPlugin, type FoundationIntegrationOptions } from "./foundation/foundation.plugin.js";
@@ -11,6 +12,7 @@ import type { SchoolRouteOptions } from "./school/school.routes.js";
 
 export interface CreateAppOptions {
   readonly foundation?: FoundationIntegrationOptions;
+  readonly academicService?: AcademicService;
   readonly authService?: AuthService;
   readonly cookieName?: string;
   readonly identityService?: IdentityService;
@@ -65,6 +67,7 @@ export function createApp(options: CreateAppOptions = {}) {
   }
 
   void app.register(registerRoutes, {
+    academicService: options.academicService,
     authService: options.authService,
     cookieName: options.cookieName ?? "myschoolos_session",
     identityService: options.identityService,
