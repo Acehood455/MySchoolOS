@@ -1,6 +1,7 @@
 import fastify from "fastify";
 import cors from "@fastify/cors";
 import type { AuthService } from "./auth/auth.service.js";
+import type { IdentityService } from "./identity/identity.service.js";
 import { registerFoundationPlugin, type FoundationIntegrationOptions } from "./foundation/foundation.plugin.js";
 import { registerRoutes } from "./routes/index.js";
 import { toProblemDetails } from "./errors.js";
@@ -12,6 +13,7 @@ export interface CreateAppOptions {
   readonly foundation?: FoundationIntegrationOptions;
   readonly authService?: AuthService;
   readonly cookieName?: string;
+  readonly identityService?: IdentityService;
   readonly schoolService?: SchoolService;
   readonly schoolActorResolver?: SchoolRouteOptions["actorResolver"];
 }
@@ -65,6 +67,7 @@ export function createApp(options: CreateAppOptions = {}) {
   void app.register(registerRoutes, {
     authService: options.authService,
     cookieName: options.cookieName ?? "myschoolos_session",
+    identityService: options.identityService,
     schoolService: options.schoolService,
     schoolActorResolver: options.schoolActorResolver
   });
