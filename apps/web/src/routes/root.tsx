@@ -1,21 +1,20 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { loadWebEnvironment, resolveApiBaseUrl } from "../lib/env.js";
+import { loadWebEnvironment } from "../lib/env.js";
 import { fetchHealth } from "../lib/api.js";
 import { RootRouteView } from "./root-view.js";
 
 const env = loadWebEnvironment();
-const apiBaseUrl = resolveApiBaseUrl(env);
 
 export function RootRoute() {
   const healthQuery = useQuery({
     queryKey: ["health"],
-    queryFn: () => fetchHealth(apiBaseUrl)
+    queryFn: () => fetchHealth(env.VITE_API_BASE_URL)
   });
 
   return (
     <RootRouteView
-      apiBaseUrl={apiBaseUrl}
+      apiBaseUrl={env.VITE_API_BASE_URL}
       healthStatus={healthQuery.data?.status ?? "Checking..."}
       healthErrorMessage={
         healthQuery.error
