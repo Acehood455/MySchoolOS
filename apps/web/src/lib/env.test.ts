@@ -1,17 +1,16 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { loadWebEnvironment } from "./env.js";
+import { loadWebEnvironment, resolveApiBaseUrl } from "./env.js";
 
 describe("loadWebEnvironment", () => {
   afterEach(() => {
     vi.unstubAllEnvs();
   });
 
-  it("defaults the API base url for local development", () => {
+  it("leaves the API base url unset when not provided", () => {
     vi.stubEnv("VITE_APP_NAME", "MySchoolOS");
 
     expect(loadWebEnvironment()).toMatchObject({
-      VITE_APP_NAME: "MySchoolOS",
-      VITE_API_BASE_URL: "http://localhost:3000"
+      VITE_APP_NAME: "MySchoolOS"
     });
   });
 
@@ -22,5 +21,24 @@ describe("loadWebEnvironment", () => {
     expect(loadWebEnvironment()).toMatchObject({
       VITE_API_BASE_URL: "http://127.0.0.1:4000"
     });
+  });
+});
+
+describe("resolveApiBaseUrl", () => {
+  it("prefers an explicit API base url", () => {
+    expect(
+      resolveApiBaseUrl({
+        VITE_APP_NAME: "MySchoolOS",
+        VITE_API_BASE_URL: "http://127.0.0.1:4000"
+      })
+    ).toBe("http://127.0.0.1:4000");
+  });
+
+  it("falls back to localhost in development", () => {
+    expect(
+      resolveApiBaseUrl({
+        VITE_APP_NAME: "MySchoolOS"
+      })
+    ).toBe("http://localhost:3000");
   });
 });
