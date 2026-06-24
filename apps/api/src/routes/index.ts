@@ -5,6 +5,8 @@ import type { AuthService } from "../auth/auth.service.js";
 import { registerAuthRoutes } from "../auth/auth.routes.js";
 import type { IdentityService } from "../identity/identity.service.js";
 import { registerIdentityRoutes } from "../identity/identity.routes.js";
+import type { EnrollmentService } from "../enrollment/enrollment.service.js";
+import { registerEnrollmentRoutes, type EnrollmentRouteOptions } from "../enrollment/enrollment.routes.js";
 import type { ParentService } from "../parent/parent.service.js";
 import { registerParentRoutes, type ParentRouteOptions } from "../parent/parent.routes.js";
 import type { StaffService } from "../staff/staff.service.js";
@@ -20,6 +22,7 @@ export interface RegisterRoutesOptions {
   readonly authService?: AuthService;
   readonly cookieName?: string;
   readonly identityService?: IdentityService;
+  readonly enrollmentService?: EnrollmentService;
   readonly parentService?: ParentService;
   readonly staffService?: StaffService;
   readonly studentService?: StudentService;
@@ -40,6 +43,13 @@ export async function registerRoutes(app: FastifyInstance, options: RegisterRout
   if (options.identityService) {
     await registerIdentityRoutes(app, {
       identityService: options.identityService
+    });
+  }
+
+  if (options.enrollmentService && options.schoolActorResolver) {
+    await registerEnrollmentRoutes(app, {
+      enrollmentService: options.enrollmentService,
+      actorResolver: options.schoolActorResolver as EnrollmentRouteOptions["actorResolver"]
     });
   }
 
