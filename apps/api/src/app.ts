@@ -2,6 +2,7 @@ import fastify from "fastify";
 import cors from "@fastify/cors";
 import type { AcademicService } from "./academic/academic.service.js";
 import type { AuthService } from "./auth/auth.service.js";
+import type { AttendanceService } from "./attendance/attendance.service.js";
 import type { IdentityService } from "./identity/identity.service.js";
 import type { EnrollmentService } from "./enrollment/enrollment.service.js";
 import type { ParentService } from "./parent/parent.service.js";
@@ -19,6 +20,7 @@ export interface CreateAppOptions {
   readonly academicService?: AcademicService;
   readonly authService?: AuthService;
   readonly cookieName?: string;
+  readonly attendanceService?: AttendanceService;
   readonly identityService?: IdentityService;
   readonly enrollmentService?: EnrollmentService;
   readonly parentService?: ParentService;
@@ -78,6 +80,7 @@ export function createApp(options: CreateAppOptions = {}) {
     academicService: options.academicService,
     authService: options.authService,
     cookieName: options.cookieName ?? "myschoolos_session",
+    attendanceService: options.attendanceService,
     identityService: options.identityService,
     enrollmentService: options.enrollmentService,
     parentService: options.parentService,
