@@ -135,14 +135,6 @@ function sortAttendance(records: readonly AttendanceRecord[]): AttendanceRecord[
   });
 }
 
-function isAttendanceAccessibleByTeacher(actor: SchoolActorContext, attendance: AttendanceRecord, isAssigned: boolean): boolean {
-  if (!isTeacher(actor)) {
-    return true;
-  }
-
-  return isAssigned;
-}
-
 export class AttendanceService {
   public constructor(private readonly options: AttendanceServiceOptions) {}
 
@@ -298,15 +290,7 @@ export class AttendanceService {
     });
 
     if (isTeacher(input.actor)) {
-      const allowed = [];
-
-      for (const record of filtered) {
-        if (await this.canTeacherAccessClass(input.actor, input.schoolId, record.classId)) {
-          allowed.push(record);
-        }
-      }
-
-      return sortAttendance(allowed);
+      return sortAttendance(await this.filterTeacherAccessibleAttendance(input.actor, input.schoolId, filtered));
     }
 
     await this.assertActorCanManageSchool(input.actor, input.schoolId);
@@ -421,14 +405,20 @@ export class AttendanceService {
     attendanceDate: Date,
     classId?: string
   ): Promise<readonly AttendanceRecord[]> {
+    const records = await this.options.repository.findAttendanceByDate(schoolId, attendanceDate);
+    const filtered = classId ? records.filter((record) => record.classId === classId) : records;
+
     if (classId) {
       await this.assertActorCanManageClass(actor, schoolId, classId);
-    } else {
-      await this.assertActorCanManageSchool(actor, schoolId);
+      return sortAttendance(filtered);
     }
 
-    const records = await this.options.repository.findAttendanceByDate(schoolId, attendanceDate);
-    return sortAttendance(classId ? records.filter((record) => record.classId === classId) : records);
+    if (isTeacher(actor)) {
+      return sortAttendance(await this.filterTeacherAccessibleAttendance(actor, schoolId, filtered));
+    }
+
+    await this.assertActorCanManageSchool(actor, schoolId);
+    return sortAttendance(filtered);
   }
 
   public async getAttendanceSummary(input: SummaryInput): Promise<AttendanceSummary> {
@@ -461,6 +451,12 @@ export class AttendanceService {
       const studentEnrollments = await this.options.enrollmentRepository.findEnrollmentsByStudentId(input.schoolId, input.studentId);
       const enrollmentIds = new Set(studentEnrollments.map((record) => record.id));
       filtered = filtered.filter((record) => enrollmentIds.has(record.enrollmentId));
+    }
+
+    if (input.classId) {
+      filtered = filtered.filter((record) => record.classId === input.classId);
+    } else if (isTeacher(input.actor)) {
+      filtered = await this.filterTeacherAccessibleAttendance(input.actor, input.schoolId, filtered);
     }
 
     const totalDays = filtered.length;
@@ -542,6 +538,22 @@ export class AttendanceService {
         classId
       })
     );
+  }
+
+  private async filterTeacherAccessibleAttendance(
+    actor: SchoolActorContext,
+    schoolId: string,
+    records: readonly AttendanceRecord[]
+  ): Promise<AttendanceRecord[]> {
+    const allowed: AttendanceRecord[] = [];
+
+    for (const record of records) {
+      if (await this.canTeacherAccessClass(actor, schoolId, record.classId)) {
+        allowed.push(record);
+      }
+    }
+
+    return allowed;
   }
 
   private async findActiveEnrollmentForStudent(schoolId: string, studentId: string): Promise<EnrollmentRecord | null> {

@@ -252,7 +252,7 @@ describe("AttendanceService", () => {
     await seedAcademicData(academicRepository, "school-1");
 
     await staffRepository.createStaff({
-      id: authContext.userId,
+      id: admin.actorId,
       schoolId: "school-1",
       employeeNumber: "EMP-001",
       firstName: "Tola",
@@ -456,7 +456,7 @@ describe("Attendance routes", () => {
     });
 
     await staffRepository.createStaff({
-      id: teacher.actorId,
+      id: authContext.userId,
       schoolId: "school-1",
       employeeNumber: "EMP-001",
       firstName: "Tola",

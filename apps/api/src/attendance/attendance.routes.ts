@@ -39,7 +39,8 @@ export async function registerAttendanceRoutes(app: FastifyInstance, options: At
       config: {
         foundation: {
           resolveTenant: true,
-          authenticate: true
+          authenticate: true,
+          permission: "tenant.read"
         }
       }
     },
@@ -72,7 +73,8 @@ export async function registerAttendanceRoutes(app: FastifyInstance, options: At
       config: {
         foundation: {
           resolveTenant: true,
-          authenticate: true
+          authenticate: true,
+          permission: "tenant.read"
         }
       }
     },
@@ -99,7 +101,8 @@ export async function registerAttendanceRoutes(app: FastifyInstance, options: At
       config: {
         foundation: {
           resolveTenant: true,
-          authenticate: true
+          authenticate: true,
+          permission: "tenant.read"
         }
       }
     },
@@ -118,7 +121,8 @@ export async function registerAttendanceRoutes(app: FastifyInstance, options: At
       config: {
         foundation: {
           resolveTenant: true,
-          authenticate: true
+          authenticate: true,
+          permission: "tenant.read"
         }
       }
     },
@@ -148,7 +152,8 @@ export async function registerAttendanceRoutes(app: FastifyInstance, options: At
       config: {
         foundation: {
           resolveTenant: true,
-          authenticate: true
+          authenticate: true,
+          permission: "tenant.read"
         }
       }
     },
@@ -179,7 +184,8 @@ export async function registerAttendanceRoutes(app: FastifyInstance, options: At
       config: {
         foundation: {
           resolveTenant: true,
-          authenticate: true
+          authenticate: true,
+          permission: "tenant.read"
         }
       }
     },
@@ -198,7 +204,8 @@ export async function registerAttendanceRoutes(app: FastifyInstance, options: At
       config: {
         foundation: {
           resolveTenant: true,
-          authenticate: true
+          authenticate: true,
+          permission: "tenant.read"
         }
       }
     },
@@ -217,7 +224,8 @@ export async function registerAttendanceRoutes(app: FastifyInstance, options: At
       config: {
         foundation: {
           resolveTenant: true,
-          authenticate: true
+          authenticate: true,
+          permission: "tenant.read"
         }
       }
     },
@@ -237,7 +245,8 @@ export async function registerAttendanceRoutes(app: FastifyInstance, options: At
       config: {
         foundation: {
           resolveTenant: true,
-          authenticate: true
+          authenticate: true,
+          permission: "tenant.read"
         }
       }
     },
