@@ -4,6 +4,7 @@ import type { AcademicService } from "./academic/academic.service.js";
 import type { AuthService } from "./auth/auth.service.js";
 import type { AssessmentService } from "./assessment/assessment.service.js";
 import type { AttendanceService } from "./attendance/attendance.service.js";
+import type { ScoreService } from "./score/score.service.js";
 import type { IdentityService } from "./identity/identity.service.js";
 import type { EnrollmentService } from "./enrollment/enrollment.service.js";
 import type { ParentService } from "./parent/parent.service.js";
@@ -23,6 +24,7 @@ export interface CreateAppOptions {
   readonly cookieName?: string;
   readonly assessmentService?: AssessmentService;
   readonly attendanceService?: AttendanceService;
+  readonly scoreService?: ScoreService;
   readonly identityService?: IdentityService;
   readonly enrollmentService?: EnrollmentService;
   readonly parentService?: ParentService;
@@ -84,6 +86,7 @@ export function createApp(options: CreateAppOptions = {}) {
     cookieName: options.cookieName ?? "myschoolos_session",
     assessmentService: options.assessmentService,
     attendanceService: options.attendanceService,
+    scoreService: options.scoreService,
     identityService: options.identityService,
     enrollmentService: options.enrollmentService,
     parentService: options.parentService,
