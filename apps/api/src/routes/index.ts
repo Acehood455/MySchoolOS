@@ -3,6 +3,8 @@ import type { AcademicService } from "../academic/academic.service.js";
 import { registerAcademicRoutes, type AcademicRouteOptions } from "../academic/academic.routes.js";
 import type { AuthService } from "../auth/auth.service.js";
 import { registerAuthRoutes } from "../auth/auth.routes.js";
+import type { AssessmentService } from "../assessment/assessment.service.js";
+import { registerAssessmentRoutes, type AssessmentRouteOptions } from "../assessment/assessment.routes.js";
 import type { AttendanceService } from "../attendance/attendance.service.js";
 import { registerAttendanceRoutes, type AttendanceRouteOptions } from "../attendance/attendance.routes.js";
 import type { IdentityService } from "../identity/identity.service.js";
@@ -23,6 +25,7 @@ export interface RegisterRoutesOptions {
   readonly academicService?: AcademicService;
   readonly authService?: AuthService;
   readonly cookieName?: string;
+  readonly assessmentService?: AssessmentService;
   readonly attendanceService?: AttendanceService;
   readonly identityService?: IdentityService;
   readonly enrollmentService?: EnrollmentService;
@@ -46,6 +49,13 @@ export async function registerRoutes(app: FastifyInstance, options: RegisterRout
   if (options.identityService) {
     await registerIdentityRoutes(app, {
       identityService: options.identityService
+    });
+  }
+
+  if (options.assessmentService && options.schoolActorResolver) {
+    await registerAssessmentRoutes(app, {
+      assessmentService: options.assessmentService,
+      actorResolver: options.schoolActorResolver as AssessmentRouteOptions["actorResolver"]
     });
   }
 
