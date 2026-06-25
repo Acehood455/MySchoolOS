@@ -7,6 +7,8 @@ import type { AssessmentService } from "../assessment/assessment.service.js";
 import { registerAssessmentRoutes, type AssessmentRouteOptions } from "../assessment/assessment.routes.js";
 import type { AttendanceService } from "../attendance/attendance.service.js";
 import { registerAttendanceRoutes, type AttendanceRouteOptions } from "../attendance/attendance.routes.js";
+import type { GradingService } from "../grading/grading.service.js";
+import { registerGradingRoutes, type GradingRouteOptions } from "../grading/grading.routes.js";
 import type { ScoreService } from "../score/score.service.js";
 import { registerScoreRoutes, type ScoreRouteOptions } from "../score/score.routes.js";
 import type { IdentityService } from "../identity/identity.service.js";
@@ -29,6 +31,7 @@ export interface RegisterRoutesOptions {
   readonly cookieName?: string;
   readonly assessmentService?: AssessmentService;
   readonly attendanceService?: AttendanceService;
+  readonly gradingService?: GradingService;
   readonly scoreService?: ScoreService;
   readonly identityService?: IdentityService;
   readonly enrollmentService?: EnrollmentService;
@@ -59,6 +62,13 @@ export async function registerRoutes(app: FastifyInstance, options: RegisterRout
     await registerAssessmentRoutes(app, {
       assessmentService: options.assessmentService,
       actorResolver: options.schoolActorResolver as AssessmentRouteOptions["actorResolver"]
+    });
+  }
+
+  if (options.gradingService && options.schoolActorResolver) {
+    await registerGradingRoutes(app, {
+      gradingService: options.gradingService,
+      actorResolver: options.schoolActorResolver as GradingRouteOptions["actorResolver"]
     });
   }
 
