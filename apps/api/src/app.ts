@@ -5,6 +5,7 @@ import type { AuthService } from "./auth/auth.service.js";
 import type { AssessmentService } from "./assessment/assessment.service.js";
 import type { AttendanceService } from "./attendance/attendance.service.js";
 import type { GradingService } from "./grading/grading.service.js";
+import type { ReportService } from "./report/report.service.js";
 import type { ResultService } from "./result/result.service.js";
 import type { ScoreService } from "./score/score.service.js";
 import type { IdentityService } from "./identity/identity.service.js";
@@ -27,6 +28,7 @@ export interface CreateAppOptions {
   readonly assessmentService?: AssessmentService;
   readonly attendanceService?: AttendanceService;
   readonly gradingService?: GradingService;
+  readonly reportService?: ReportService;
   readonly resultService?: ResultService;
   readonly scoreService?: ScoreService;
   readonly identityService?: IdentityService;
@@ -91,6 +93,7 @@ export function createApp(options: CreateAppOptions = {}) {
     assessmentService: options.assessmentService,
     attendanceService: options.attendanceService,
     gradingService: options.gradingService,
+    reportService: options.reportService,
     resultService: options.resultService,
     scoreService: options.scoreService,
     identityService: options.identityService,
